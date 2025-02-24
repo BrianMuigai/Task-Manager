@@ -63,6 +63,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '961926818771',
     projectId: 'sampleweatherapp-14130',
     storageBucket: 'sampleweatherapp-14130.firebasestorage.app',
+    androidClientId: '961926818771-3n0bridr5t8asn159ifbk29057kb2at9.apps.googleusercontent.com',
     iosClientId: '961926818771-cvb3em1u6ia5kkeitlfknmd0bnpmmob7.apps.googleusercontent.com',
     iosBundleId: 'com.example.task',
   );
