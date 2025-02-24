@@ -15,7 +15,6 @@ import 'package:task/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:task/features/auth/presentation/widgets/auth_wrapper.dart';
 import 'package:task/features/settings/presentation/bloc/settings_bloc.dart';
 import 'package:task/features/tasks/presentation/bloc/tasks_bloc.dart';
-import 'package:task/features/tasks/presentation/pages/tasks_list_page.dart';
 import 'package:task/firebase_options.dart';
 
 void main() async {

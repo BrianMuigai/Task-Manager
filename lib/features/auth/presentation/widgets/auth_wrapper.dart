@@ -22,6 +22,10 @@ class AuthWrapper extends StatelessWidget {
         } else if (state is PasswordResetError) {
           showErrorDialog(
               context, "Error sending reset email: ${state.message}");
+        } else if (state is LoginError) {
+          showErrorDialog(context, "Login Failure\n${state.error}");
+        } else if (state is RegistrationError) {
+          showErrorDialog(context, "Registration Failure\n${state.error}");
         }
       },
       child: BlocBuilder<AuthBloc, AuthState>(

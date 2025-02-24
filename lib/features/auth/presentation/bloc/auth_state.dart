@@ -18,6 +18,18 @@ class Authenticated extends AuthState {
 
 class Unauthenticated extends AuthState {}
 
+class RegistrationError extends AuthState {
+  final String error;
+
+  const RegistrationError({required this.error});
+}
+
+class LoginError extends AuthState {
+  final String error;
+
+  const LoginError({required this.error});
+}
+
 class PasswordResetEmailSent extends AuthState {}
 
 class PasswordResetError extends AuthState {

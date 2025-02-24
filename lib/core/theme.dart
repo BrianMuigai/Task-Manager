@@ -93,11 +93,11 @@ ThemeData buildDarkTheme() {
       fillColor: Color(0xFF1E1E1E),
       filled: true,
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(10),
       ),
       focusedBorder: OutlineInputBorder(
         borderSide: BorderSide(color: kBrandGreen),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(10),
       ),
       labelStyle: TextStyle(color: Colors.white70),
       hintStyle: TextStyle(color: Colors.white38),

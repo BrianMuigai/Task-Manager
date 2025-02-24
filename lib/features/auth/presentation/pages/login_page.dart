@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:task/core/validators.dart';
+import 'package:task/features/auth/presentation/pages/register_page.dart';
 import '../bloc/auth_bloc.dart';
 
 class LoginPage extends StatefulWidget {
@@ -13,13 +15,11 @@ class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  bool _isLoading = false;
   String? _errorMessage;
 
   void _signInWithEmail() {
     if (_formKey.currentState!.validate()) {
       setState(() {
-        _isLoading = true;
         _errorMessage = null;
       });
       context.read<AuthBloc>().add(
@@ -76,100 +76,141 @@ class _LoginPageState extends State<LoginPage> {
     );
 
     return Scaffold(
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              // Introductory content.
-              Text(
-                "Welcome to Task Manager!",
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 12),
-              Text(
-                "Sign in to manage your tasks, collaborate with others, and stay on top of your schedule.",
-                style: Theme.of(context).textTheme.bodyMedium,
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 32),
-              Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    // Email field.
-                    TextFormField(
-                      controller: _emailController,
-                      decoration: InputDecoration(
-                        labelText: "Email",
+      body: BlocListener<AuthBloc, AuthState>(
+        listener: (context, state) {
+          if (state is LoginError) {
+            setState(() {
+              _errorMessage = state.error;
+            });
+          }
+        },
+        child: SafeArea(
+          child: BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
+            return Column(
+              children: [
+                if (state is AuthLoading)
+                  Center(child: LinearProgressIndicator()),
+                Expanded(
+                  child: Center(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        children: [
+                          Text(
+                            "Welcome to Task Manager!",
+                            style: Theme.of(context)
+                                .textTheme
+                                .headlineMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                            textAlign: TextAlign.center,
+                          ),
+                          SizedBox(height: 12),
+                          Text(
+                            "Sign in to manage your tasks, collaborate with others, and stay on top of your schedule.",
+                            style: Theme.of(context).textTheme.bodyMedium,
+                            textAlign: TextAlign.center,
+                          ),
+                          SizedBox(height: 32),
+                          Form(
+                            key: _formKey,
+                            child: Column(
+                              children: [
+                                // Email field.
+                                TextFormField(
+                                  controller: _emailController,
+                                  decoration: InputDecoration(
+                                    labelText: "Email",
+                                  ),
+                                  enabled: state is! AuthLoading,
+                                  validator: Validators.validateEmail,
+                                ),
+                                SizedBox(height: 16),
+                                // Password field.
+                                TextFormField(
+                                  controller: _passwordController,
+                                  decoration: InputDecoration(
+                                    labelText: "Password",
+                                  ),
+                                  enabled: state is! AuthLoading,
+                                  obscureText: true,
+                                  validator: Validators.validatePassword,
+                                ),
+                                SizedBox(height: 16),
+                                // Email/Password Sign-In Button with Material 3 styling.
+                                ElevatedButton(
+                                  style: emailButtonStyle,
+                                  onPressed: state is AuthLoading
+                                      ? null
+                                      : _signInWithEmail,
+                                  child: Text("Sign In with Email"),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 16),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => RegisterPage()),
+                              );
+                            },
+                            child: Text("Don't have an account? Register"),
+                          ),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: TextButton(
+                              onPressed: _forgotPassword,
+                              child: Text("Forgot Password?"),
+                            ),
+                          ),
+
+                          SizedBox(height: 16),
+                          // Divider.
+                          Row(
+                            children: <Widget>[
+                              Expanded(child: Divider()),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8.0),
+                                child: Text("OR"),
+                              ),
+                              Expanded(child: Divider()),
+                            ],
+                          ),
+                          SizedBox(height: 16),
+                          // Google Sign-In Button styled like a Material 3 Google button.
+                          ElevatedButton.icon(
+                            style: googleButtonStyle,
+                            icon: Image.asset(
+                              'assets/imgs/google_logo.png',
+                              height: 24,
+                              width: 24,
+                            ),
+                            label: Text("Continue with Google"),
+                            onPressed: state is AuthLoading
+                                ? null
+                                : _continueWithGoogle,
+                          ),
+                          if (_errorMessage != null) ...[
+                            SizedBox(height: 16),
+                            Text(
+                              _errorMessage!,
+                              style: TextStyle(color: Colors.red),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ],
                       ),
-                      validator: (value) => value == null || value.isEmpty
-                          ? "Please enter your email"
-                          : null,
                     ),
-                    SizedBox(height: 16),
-                    // Password field.
-                    TextFormField(
-                      controller: _passwordController,
-                      decoration: InputDecoration(
-                        labelText: "Password",
-                      ),
-                      obscureText: true,
-                      validator: (value) => value == null || value.isEmpty
-                          ? "Please enter your password"
-                          : null,
-                    ),
-                    SizedBox(height: 16),
-                    // Email/Password Sign-In Button with Material 3 styling.
-                    ElevatedButton(
-                      style: emailButtonStyle,
-                      onPressed: _isLoading ? null : _signInWithEmail,
-                      child: Text("Sign In with Email"),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 10),
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: _forgotPassword,
-                  child: Text("Forgot Password?"),
-                ),
-              ),
-              SizedBox(height: 16),
-              // Divider.
-              Row(
-                children: <Widget>[
-                  Expanded(child: Divider()),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Text("OR"),
                   ),
-                  Expanded(child: Divider()),
-                ],
-              ),
-              SizedBox(height: 16),
-              // Google Sign-In Button styled like a Material 3 Google button.
-              ElevatedButton.icon(
-                style: googleButtonStyle,
-                icon: Image.asset(
-                  'assets/imgs/google_logo.png',
-                  height: 24,
-                  width: 24,
                 ),
-                label: Text("Continue with Google"),
-                onPressed: _isLoading ? null : _continueWithGoogle,
-              ),
-              if (_errorMessage != null) ...[
-                SizedBox(height: 16),
-                Text(_errorMessage!, style: TextStyle(color: Colors.red)),
               ],
-            ],
-          ),
+            );
+          }),
         ),
       ),
     );

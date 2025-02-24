@@ -60,6 +60,31 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<AppUser> registerWithEmailPassword(
+      String email, String password, String displayName) async {
+    UserCredential userCredential =
+        await firebaseAuth.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+    final user = userCredential.user;
+    if (user == null) {
+      throw Exception("Registration failed");
+    }
+    // Update the display name
+    await user.updateDisplayName(displayName);
+    // Optionally, reload the user to get the updated info.
+    await user.reload();
+    final updatedUser = firebaseAuth.currentUser;
+    return AppUser(
+      uid: updatedUser!.uid,
+      displayName: updatedUser.displayName ?? displayName,
+      email: updatedUser.email ?? email,
+      photoUrl: updatedUser.photoURL ?? '',
+    );
+  }
+
+  @override
   Future<void> signOut() async {
     await googleSignIn.signOut();
     await firebaseAuth.signOut();
