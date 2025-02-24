@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "961926818771",
+    "project_id": "sampleweatherapp-14130",
+    "storage_bucket": "sampleweatherapp-14130.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:961926818771:android:bff83cc3a93b920f135d26",
+        "android_client_info": {
+          "package_name": "com.example.task"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "961926818771-rfddtjjl5mo2q7ngb1ah3hfgmi3s5c2s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBrrQTOPMyMSBV5wxHFh7qnvhdXJWydluw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "961926818771-rfddtjjl5mo2q7ngb1ah3hfgmi3s5c2s.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "961926818771-cvb3em1u6ia5kkeitlfknmd0bnpmmob7.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.task"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:961926818771:android:9094892700b0eb8f135d26",
+        "android_client_info": {
+          "package_name": "com.sampleweatherapp.debug"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "961926818771-rfddtjjl5mo2q7ngb1ah3hfgmi3s5c2s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBrrQTOPMyMSBV5wxHFh7qnvhdXJWydluw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "961926818771-rfddtjjl5mo2q7ngb1ah3hfgmi3s5c2s.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "961926818771-cvb3em1u6ia5kkeitlfknmd0bnpmmob7.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.task"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
