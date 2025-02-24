@@ -19,6 +19,8 @@ import 'package:shared_preferences/shared_preferences.dart' as _i460;
 import '../../features/auth/data/repositories/auth_repository_impl.dart'
     as _i153;
 import '../../features/auth/domain/repositories/auth_repository.dart' as _i787;
+import '../../features/auth/domain/usecases/register_with_email_password.dart'
+    as _i1003;
 import '../../features/auth/domain/usecases/reset_password.dart' as _i1066;
 import '../../features/auth/domain/usecases/sign_in_with_email_password.dart'
     as _i466;
@@ -91,6 +93,8 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i466.SignInWithEmailPassword(gh<_i787.AuthRepository>()));
     gh.lazySingleton<_i1066.ResetPassword>(
         () => _i1066.ResetPassword(gh<_i787.AuthRepository>()));
+    gh.lazySingleton<_i1003.RegisterWithEmailPassword>(
+        () => _i1003.RegisterWithEmailPassword(gh<_i787.AuthRepository>()));
     gh.factory<_i447.TasksBloc>(() => _i447.TasksBloc(
           gh<_i517.GetTasks>(),
           gh<_i793.AddTask>(),
@@ -103,6 +107,7 @@ extension GetItInjectableX on _i174.GetIt {
           gh<_i59.FirebaseAuth>(instanceName: 'firebaseAuth'),
           gh<_i466.SignInWithEmailPassword>(),
           gh<_i1066.ResetPassword>(),
+          gh<_i1003.RegisterWithEmailPassword>(),
         ));
     return this;
   }
