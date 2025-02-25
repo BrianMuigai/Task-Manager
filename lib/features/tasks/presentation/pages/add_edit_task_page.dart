@@ -1,8 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:task/features/auth/domain/entities/user.dart';
 import 'package:task/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:task/features/tasks/domain/entities/task.dart';
 import 'package:task/features/tasks/presentation/bloc/tasks_bloc.dart';
+import 'package:task/features/tasks/presentation/widgets/live_user_status_widget.dart';
+import 'package:task/features/tasks/presentation/widgets/search_collaborators_widget.dart';
 
 class AddEditTaskPage extends StatefulWidget {
   final Task? task;
@@ -16,20 +20,28 @@ class AddEditTaskPage extends StatefulWidget {
 class _AddEditTaskPageState extends State<AddEditTaskPage> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _titleController;
-  late TextEditingController _collaboratorsController;
+  late TextEditingController _descriptionController;
+  late AppUser currentUser;
   DateTime? _dueDate;
   bool _completed = false;
+  List<String> _collaboratorIds = [];
 
   @override
   void initState() {
     super.initState();
     _titleController = TextEditingController(text: widget.task?.title ?? '');
+    _descriptionController =
+        TextEditingController(text: widget.task?.description ?? '');
     _dueDate = widget.task?.dueDate;
     _completed = widget.task?.completed ?? false;
-    // Initialize collaborator field with comma-separated values if task exists.
-    _collaboratorsController = TextEditingController(
-        text:
-            widget.task != null ? widget.task!.collaboratorIds.join(", ") : "");
+    _collaboratorIds = widget.task?.collaboratorIds ?? [];
+    currentUser = (context.read<AuthBloc>().state as Authenticated).user;
+    FirebaseFirestore.instance
+        .collection('tasks')
+        .doc(widget.task?.id ?? 'newTaskId')
+        .update({
+      'editingUsers.${currentUser.uid}': currentUser.displayName,
+    });
   }
 
   Future<void> _selectDueDate(BuildContext context) async {
@@ -46,13 +58,37 @@ class _AddEditTaskPageState extends State<AddEditTaskPage> {
     }
   }
 
-  // Parse collaborator IDs from the text field.
-  List<String> _parseCollaborators(String input) {
-    return input
-        .split(',')
-        .map((collab) => collab.trim())
-        .where((collab) => collab.isNotEmpty)
-        .toList();
+  void _addCollaborator(AppUser user) {
+    if (!_collaboratorIds.contains(user.uid)) {
+      setState(() {
+        _collaboratorIds.add(user.uid);
+      });
+    }
+    Navigator.pop(context); // Close the modal sheet
+  }
+
+  void _showCollaboratorSearch() {
+    // Get current user id from AuthBloc
+    String currentUserId = "";
+    final authState = context.read<AuthBloc>().state;
+    if (authState is Authenticated) {
+      currentUserId = authState.user.uid;
+    }
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      showDragHandle: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return SearchCollaboratorsWidget(
+          currentUserId: currentUserId,
+          onUserSelected: _addCollaborator,
+        );
+      },
+    );
   }
 
   Future<void> _saveTask() async {
@@ -67,20 +103,17 @@ class _AddEditTaskPageState extends State<AddEditTaskPage> {
         ownerId = "unknown";
       }
 
-      // Parse collaborators from the input.
-      final collaborators = _parseCollaborators(_collaboratorsController.text);
-
       // If editing, use the existing id; otherwise, generate one.
       final String id = widget.task?.id ?? UniqueKey().toString();
       final Task newTask = Task(
-        id: id,
-        title: _titleController.text,
-        dueDate: _dueDate,
-        completed: _completed,
-        ownerId: ownerId,
-        collaboratorIds: collaborators,
-        updatedAt: DateTime.now(),
-      );
+          id: id,
+          title: _titleController.text,
+          dueDate: _dueDate,
+          completed: _completed,
+          ownerId: ownerId,
+          collaboratorIds: _collaboratorIds,
+          updatedAt: DateTime.now(),
+          description: _descriptionController.text);
       if (widget.task != null) {
         context.read<TasksBloc>().add(UpdateTaskEvent(newTask));
       } else {
@@ -100,7 +133,13 @@ class _AddEditTaskPageState extends State<AddEditTaskPage> {
   @override
   void dispose() {
     _titleController.dispose();
-    _collaboratorsController.dispose();
+    _descriptionController.dispose();
+    FirebaseFirestore.instance
+        .collection('tasks')
+        .doc(widget.task?.id ?? 'newTaskId')
+        .update({
+      'editingUsers.${currentUser.uid}': FieldValue.delete(),
+    });
     super.dispose();
   }
 
@@ -136,6 +175,15 @@ class _AddEditTaskPageState extends State<AddEditTaskPage> {
                     : null,
               ),
               SizedBox(height: 20),
+              TextFormField(
+                controller: _descriptionController,
+                decoration: InputDecoration(
+                  labelText: "Task Description",
+                  border: OutlineInputBorder(),
+                ),
+                maxLines: 3,
+              ),
+              SizedBox(height: 20),
               // Due date field.
               ListTile(
                 contentPadding: EdgeInsets.zero,
@@ -147,15 +195,30 @@ class _AddEditTaskPageState extends State<AddEditTaskPage> {
               ),
               SizedBox(height: 20),
               // Collaborators field.
-              TextFormField(
-                controller: _collaboratorsController,
-                decoration: InputDecoration(
-                  labelText: "Collaborators (comma-separated IDs/emails)",
-                  border: OutlineInputBorder(),
-                ),
-                // No strict validation; can be optional.
+              Text(
+                "Collaborators:",
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                children: _collaboratorIds
+                    .map((id) => Chip(
+                          label: Text(id),
+                          onDeleted: () {
+                            setState(() {
+                              _collaboratorIds.remove(id);
+                            });
+                          },
+                        ))
+                    .toList(),
+              ),
+              TextButton.icon(
+                onPressed: _showCollaboratorSearch,
+                icon: Icon(Icons.search),
+                label: Text("Add Collaborator"),
+              ),
+              SizedBox(height: 10),
               // Completed toggle.
               SwitchListTile(
                 title: Text("Mark as Completed"),
@@ -166,13 +229,19 @@ class _AddEditTaskPageState extends State<AddEditTaskPage> {
                   });
                 },
               ),
-              SizedBox(height: 40),
+
+              if (widget.task != null) ...[
+                const SizedBox(height: 10),
+                LiveUserStatusWidget(
+                    taskId: widget.task!.id, currentUserId: currentUser.uid),
+              ],
+              SizedBox(height: 50),
               ElevatedButton(
                 onPressed: _saveTask,
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Text(
-                    "Save Task",
+                    widget.task != null ? "Update Task" : "Save Task",
                     style: TextStyle(fontSize: 18),
                   ),
                 ),

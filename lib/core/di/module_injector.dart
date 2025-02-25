@@ -10,7 +10,7 @@ abstract class RegisterModules {
   Future<SharedPreferences> prefs() async =>
       await SharedPreferences.getInstance();
 
-  @Named('firebaseDatabase')
+  @Named('firebaseFirestore')
   FirebaseFirestore get firebaseDatabase => FirebaseFirestore.instance;
 
   @Named('firebaseAuth')

@@ -22,6 +22,7 @@ import '../../features/auth/domain/repositories/auth_repository.dart' as _i787;
 import '../../features/auth/domain/usecases/register_with_email_password.dart'
     as _i1003;
 import '../../features/auth/domain/usecases/reset_password.dart' as _i1066;
+import '../../features/auth/domain/usecases/search_users.dart' as _i172;
 import '../../features/auth/domain/usecases/sign_in_with_email_password.dart'
     as _i466;
 import '../../features/auth/domain/usecases/sign_in_with_google.dart' as _i692;
@@ -59,10 +60,6 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i873.FirebaseTaskDataSource());
     gh.lazySingleton<_i148.TaskRepository>(() => _i20.TaskRepositoryImpl(
         dataSource: gh<_i873.FirebaseTaskDataSource>()));
-    gh.factory<_i974.FirebaseFirestore>(
-      () => registerModules.firebaseDatabase,
-      instanceName: 'firebaseDatabase',
-    );
     gh.factory<_i59.FirebaseAuth>(
       () => registerModules.firebaseAuth,
       instanceName: 'firebaseAuth',
@@ -71,8 +68,17 @@ extension GetItInjectableX on _i174.GetIt {
       () => registerModules.googleSignIn,
       instanceName: 'googleSignIn',
     );
+    gh.factory<_i974.FirebaseFirestore>(
+      () => registerModules.firebaseDatabase,
+      instanceName: 'firebaseFirestore',
+    );
     gh.lazySingleton<_i178.SharedPreferencesManager>(
         () => _i178.SharedPreferencesManager(gh<_i460.SharedPreferences>()));
+    gh.lazySingleton<_i787.AuthRepository>(() => _i153.AuthRepositoryImpl(
+          gh<_i59.FirebaseAuth>(instanceName: 'firebaseAuth'),
+          gh<_i116.GoogleSignIn>(instanceName: 'googleSignIn'),
+          gh<_i974.FirebaseFirestore>(instanceName: 'firebaseFirestore'),
+        ));
     gh.lazySingleton<_i517.GetTasks>(
         () => _i517.GetTasks(gh<_i148.TaskRepository>()));
     gh.lazySingleton<_i517.GetTasksStream>(
@@ -83,31 +89,30 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i739.UpdateTask(gh<_i148.TaskRepository>()));
     gh.lazySingleton<_i840.DeleteTask>(
         () => _i840.DeleteTask(gh<_i148.TaskRepository>()));
-    gh.lazySingleton<_i787.AuthRepository>(() => _i153.AuthRepositoryImpl(
-          gh<_i59.FirebaseAuth>(instanceName: 'firebaseAuth'),
-          gh<_i116.GoogleSignIn>(instanceName: 'googleSignIn'),
-        ));
+    gh.lazySingleton<_i1066.ResetPassword>(
+        () => _i1066.ResetPassword(gh<_i787.AuthRepository>()));
+    gh.lazySingleton<_i172.SearchUsers>(
+        () => _i172.SearchUsers(gh<_i787.AuthRepository>()));
     gh.lazySingleton<_i692.SignInWithGoogle>(
         () => _i692.SignInWithGoogle(gh<_i787.AuthRepository>()));
     gh.lazySingleton<_i466.SignInWithEmailPassword>(
         () => _i466.SignInWithEmailPassword(gh<_i787.AuthRepository>()));
-    gh.lazySingleton<_i1066.ResetPassword>(
-        () => _i1066.ResetPassword(gh<_i787.AuthRepository>()));
     gh.lazySingleton<_i1003.RegisterWithEmailPassword>(
         () => _i1003.RegisterWithEmailPassword(gh<_i787.AuthRepository>()));
-    gh.factory<_i447.TasksBloc>(() => _i447.TasksBloc(
-          gh<_i517.GetTasks>(),
-          gh<_i793.AddTask>(),
-          gh<_i739.UpdateTask>(),
-          gh<_i840.DeleteTask>(),
-          gh<_i517.GetTasksStream>(),
-        ));
     gh.factory<_i797.AuthBloc>(() => _i797.AuthBloc(
           gh<_i692.SignInWithGoogle>(),
           gh<_i59.FirebaseAuth>(instanceName: 'firebaseAuth'),
           gh<_i466.SignInWithEmailPassword>(),
           gh<_i1066.ResetPassword>(),
           gh<_i1003.RegisterWithEmailPassword>(),
+        ));
+    gh.factory<_i447.TasksBloc>(() => _i447.TasksBloc(
+          gh<_i517.GetTasks>(),
+          gh<_i793.AddTask>(),
+          gh<_i739.UpdateTask>(),
+          gh<_i840.DeleteTask>(),
+          gh<_i517.GetTasksStream>(),
+          gh<_i172.SearchUsers>(),
         ));
     return this;
   }

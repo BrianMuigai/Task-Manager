@@ -7,4 +7,5 @@ abstract class AuthRepository {
   Future<AppUser> registerWithEmailPassword(
       String email, String password, String displayName);
   Future<void> sendPasswordResetEmail(String email);
+  Future<List<AppUser>> searchUsers(String query);
 }

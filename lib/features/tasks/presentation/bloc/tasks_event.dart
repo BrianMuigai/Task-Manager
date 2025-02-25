@@ -25,3 +25,13 @@ class DeleteTaskEvent extends TasksEvent {
   final String taskId;
   const DeleteTaskEvent(this.taskId);
 }
+
+class SearchCollaboratorsEvent extends TasksEvent {
+  final String query;
+  final String currentUserId;
+
+  const SearchCollaboratorsEvent({
+    required this.query,
+    required this.currentUserId,
+  });
+}

@@ -20,3 +20,15 @@ class TasksError extends TasksState {
   final String message;
   const TasksError(this.message);
 }
+
+class CollaboratorsSearchLoading extends TasksState {}
+
+class CollaboratorsSearchLoaded extends TasksState {
+  final List<AppUser> results;
+  const CollaboratorsSearchLoaded(this.results);
+}
+
+class CollaboratorsSearchError extends TasksState {
+  final String message;
+  const CollaboratorsSearchError(this.message);
+}

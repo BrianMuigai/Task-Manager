@@ -25,28 +25,28 @@ class TaskRepositoryImpl implements TaskRepository {
   @override
   Future<void> addTask(Task task) async {
     final taskModel = TaskModel(
-      id: task.id,
-      title: task.title,
-      dueDate: task.dueDate,
-      completed: task.completed,
-      ownerId: task.ownerId,
-      collaboratorIds: task.collaboratorIds,
-      updatedAt: task.updatedAt,
-    );
+        id: task.id,
+        title: task.title,
+        dueDate: task.dueDate,
+        completed: task.completed,
+        ownerId: task.ownerId,
+        collaboratorIds: task.collaboratorIds,
+        updatedAt: task.updatedAt,
+        description: task.description);
     await dataSource.addTask(taskModel);
   }
 
   @override
   Future<void> updateTask(Task task) async {
     final taskModel = TaskModel(
-      id: task.id,
-      title: task.title,
-      dueDate: task.dueDate,
-      completed: task.completed,
-      ownerId: task.ownerId,
-      collaboratorIds: task.collaboratorIds,
-      updatedAt: task.updatedAt,
-    );
+        id: task.id,
+        title: task.title,
+        dueDate: task.dueDate,
+        completed: task.completed,
+        ownerId: task.ownerId,
+        collaboratorIds: task.collaboratorIds,
+        updatedAt: task.updatedAt,
+        description: task.description);
     await dataSource.updateTask(taskModel);
   }
 

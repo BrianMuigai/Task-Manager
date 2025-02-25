@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
+import 'package:task/features/auth/domain/entities/user.dart';
+import 'package:task/features/auth/domain/usecases/search_users.dart';
 import 'package:task/features/tasks/domain/entities/task.dart';
 import 'package:task/features/tasks/domain/usecases/add_task.dart';
 import 'package:task/features/tasks/domain/usecases/delete_task.dart';
@@ -19,6 +21,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
   final UpdateTask updateTaskUseCase;
   final DeleteTask deleteTaskUseCase;
   final GetTasksStream getTasksStreamUseCase;
+  final SearchUsers searchUsersUseCase;
 
   StreamSubscription? _tasksSubscription;
 
@@ -28,6 +31,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     this.updateTaskUseCase,
     this.deleteTaskUseCase,
     this.getTasksStreamUseCase,
+    this.searchUsersUseCase,
   ) : super(TasksInitial()) {
     on<LoadTasksEvent>((event, emit) async {
       emit(TasksLoading());
@@ -77,6 +81,19 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
         emit(TasksLoaded(tasks));
       } catch (e) {
         emit(TasksError("Failed to delete task: ${e.toString()}"));
+      }
+    });
+
+    on<SearchCollaboratorsEvent>((event, emit) async {
+      try {
+        emit(CollaboratorsSearchLoading());
+        final results = await searchUsersUseCase(event.query);
+        // Filter out the current user if needed.
+        final filteredResults =
+            results.where((user) => user.uid != event.currentUserId).toList();
+        emit(CollaboratorsSearchLoaded(filteredResults));
+      } catch (e) {
+        emit(CollaboratorsSearchError(e.toString()));
       }
     });
   }

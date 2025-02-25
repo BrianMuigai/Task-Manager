@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:injectable/injectable.dart';
@@ -8,11 +9,12 @@ import '../../domain/repositories/auth_repository.dart';
 class AuthRepositoryImpl implements AuthRepository {
   final FirebaseAuth firebaseAuth;
   final GoogleSignIn googleSignIn;
+  final FirebaseFirestore firestore;
 
   AuthRepositoryImpl(
-    @Named('firebaseAuth') this.firebaseAuth,
-    @Named('googleSignIn') this.googleSignIn,
-  );
+      @Named('firebaseAuth') this.firebaseAuth,
+      @Named('googleSignIn') this.googleSignIn,
+      @Named('firebaseFirestore') this.firestore);
 
   @override
   Future<AppUser> signInWithGoogle() async {
@@ -93,5 +95,22 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<void> sendPasswordResetEmail(String email) async {
     await firebaseAuth.sendPasswordResetEmail(email: email);
+  }
+
+  @override
+  Future<List<AppUser>> searchUsers(String query) async {
+    final snapshot = await firestore
+        .collection('users')
+        .where('keywords', arrayContains: query.toLowerCase())
+        .get();
+    return snapshot.docs.map((doc) {
+      final data = doc.data();
+      return AppUser(
+        uid: doc.id,
+        displayName: data['displayName'] ?? '',
+        email: data['email'] ?? '',
+        photoUrl: data['photoUrl'] ?? '',
+      );
+    }).toList();
   }
 }
