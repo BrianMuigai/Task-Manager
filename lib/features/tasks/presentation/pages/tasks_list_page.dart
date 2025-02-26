@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:task/core/l10n/app_localization.dart';
 import 'package:task/features/settings/presentation/pages/settings_page.dart';
 import 'package:task/features/tasks/domain/entities/task.dart';
 import 'package:task/features/tasks/presentation/bloc/tasks_bloc.dart';
@@ -21,7 +22,7 @@ class _TasksListPageState extends State<TasksListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Task Manager (Bloc)"),
+        title: Text(AppLocalizations.getString(context, 'appName')),
         actions: [
           IconButton(
             icon: Icon(Icons.refresh),
@@ -44,13 +45,16 @@ class _TasksListPageState extends State<TasksListPage> {
         listener: (context, state) {
           if (state is CalendarSyncSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Task added to calendar.")),
+              SnackBar(
+                  content: Text(AppLocalizations.getString(
+                      context, 'taskAddedToCalendar'))),
             );
           } else if (state is CalendarSyncFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                   backgroundColor: Colors.redAccent,
-                  content: Text("Could not add task to calendar...")),
+                  content: Text(AppLocalizations.getString(
+                      context, 'coultNotAddToCalendar'))),
             );
           }
         },
@@ -59,7 +63,7 @@ class _TasksListPageState extends State<TasksListPage> {
           child: Column(
             children: [
               SearchBar(
-                hintText: "Search Tasks...",
+                hintText: AppLocalizations.getString(context, 'searchTask'),
                 leading: Icon(Icons.search,
                     color: Theme.of(context)
                             .inputDecorationTheme
@@ -117,8 +121,9 @@ class _TasksListPageState extends State<TasksListPage> {
                                     ),
                                     subtitle: task.dueDateTime != null
                                         ? Text(
-                                            "Due: ${task.dueDateTime!.toLocal().toString().split(' ')[0]}")
-                                        : Text("No due date"),
+                                            "${AppLocalizations.getString(context, 'due')}: ${task.dueDateTime!.toLocal().toString().split(' ')[0]}")
+                                        : Text(AppLocalizations.getString(
+                                            context, 'noDueDate')),
                                     trailing: Checkbox(
                                       value: task.completed,
                                       onChanged: (value) {
@@ -157,7 +162,7 @@ class _TasksListPageState extends State<TasksListPage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        tooltip: 'Add Task',
+        tooltip: AppLocalizations.getString(context, 'addTask'),
         child: Icon(Icons.add),
         onPressed: () {
           Navigator.push(

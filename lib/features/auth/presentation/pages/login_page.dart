@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:task/core/l10n/app_localization.dart';
 import 'package:task/core/validators.dart';
 import 'package:task/features/auth/presentation/pages/register_page.dart';
+import 'package:task/features/settings/presentation/pages/settings_page.dart';
 import '../bloc/auth_bloc.dart';
 
 class LoginPage extends StatefulWidget {
@@ -40,7 +42,9 @@ class _LoginPageState extends State<LoginPage> {
     if (email.isEmpty) {
       // Prompt user to enter an email first.
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Please enter your email first.")),
+        SnackBar(
+            content:
+                Text(AppLocalizations.getString(context, 'enterEmailFirst'))),
       );
       return;
     }
@@ -76,6 +80,19 @@ class _LoginPageState extends State<LoginPage> {
     );
 
     return Scaffold(
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SettingsPage()),
+              );
+            },
+          ),
+        ],
+      ),
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is LoginError) {
@@ -97,7 +114,7 @@ class _LoginPageState extends State<LoginPage> {
                       child: Column(
                         children: [
                           Text(
-                            "Welcome to Task Manager!",
+                            AppLocalizations.getString(context, 'welcomeMsg'),
                             style: Theme.of(context)
                                 .textTheme
                                 .headlineMedium
@@ -108,7 +125,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           SizedBox(height: 12),
                           Text(
-                            "Sign in to manage your tasks, collaborate with others, and stay on top of your schedule.",
+                            AppLocalizations.getString(context, 'signInIntro'),
                             style: Theme.of(context).textTheme.bodyMedium,
                             textAlign: TextAlign.center,
                           ),
@@ -121,7 +138,8 @@ class _LoginPageState extends State<LoginPage> {
                                 TextFormField(
                                   controller: _emailController,
                                   decoration: InputDecoration(
-                                    labelText: "Email",
+                                    labelText: AppLocalizations.getString(
+                                        context, 'email'),
                                   ),
                                   enabled: state is! AuthLoading,
                                   validator: Validators.validateEmail,
@@ -131,7 +149,8 @@ class _LoginPageState extends State<LoginPage> {
                                 TextFormField(
                                   controller: _passwordController,
                                   decoration: InputDecoration(
-                                    labelText: "Password",
+                                    labelText: AppLocalizations.getString(
+                                        context, 'password'),
                                   ),
                                   enabled: state is! AuthLoading,
                                   obscureText: true,
@@ -144,7 +163,8 @@ class _LoginPageState extends State<LoginPage> {
                                   onPressed: state is AuthLoading
                                       ? null
                                       : _signInWithEmail,
-                                  child: Text("Sign In with Email"),
+                                  child: Text(AppLocalizations.getString(
+                                      context, 'signInWithEmail')),
                                 ),
                               ],
                             ),
@@ -158,13 +178,15 @@ class _LoginPageState extends State<LoginPage> {
                                     builder: (context) => RegisterPage()),
                               );
                             },
-                            child: Text("Don't have an account? Register"),
+                            child: Text(AppLocalizations.getString(
+                                context, 'dontHaveAcc')),
                           ),
                           Align(
                             alignment: Alignment.centerRight,
                             child: TextButton(
                               onPressed: _forgotPassword,
-                              child: Text("Forgot Password?"),
+                              child: Text(AppLocalizations.getString(
+                                  context, 'forgotPassword')),
                             ),
                           ),
 
@@ -176,7 +198,9 @@ class _LoginPageState extends State<LoginPage> {
                               Padding(
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 8.0),
-                                child: Text("OR"),
+                                child: Text(
+                                    AppLocalizations.getString(context, 'or')
+                                        .toUpperCase()),
                               ),
                               Expanded(child: Divider()),
                             ],
@@ -190,7 +214,8 @@ class _LoginPageState extends State<LoginPage> {
                               height: 24,
                               width: 24,
                             ),
-                            label: Text("Continue with Google"),
+                            label: Text(AppLocalizations.getString(
+                                context, 'continueWithGoogle')),
                             onPressed: state is AuthLoading
                                 ? null
                                 : _continueWithGoogle,

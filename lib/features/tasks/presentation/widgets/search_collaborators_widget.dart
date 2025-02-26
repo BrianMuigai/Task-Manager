@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:task/core/l10n/app_localization.dart';
 import 'package:task/features/auth/domain/entities/user.dart';
 import 'package:task/features/tasks/presentation/bloc/tasks_bloc.dart';
 
@@ -41,7 +42,8 @@ class _SearchCollaboratorsWidgetState extends State<SearchCollaboratorsWidget> {
           TextField(
             controller: _searchController,
             decoration: InputDecoration(
-              labelText: "Search Collaborators",
+              labelText:
+                  AppLocalizations.getString(context, 'searchCollaborators'),
               prefixIcon: Icon(Icons.search),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
@@ -60,7 +62,7 @@ class _SearchCollaboratorsWidgetState extends State<SearchCollaboratorsWidget> {
                   if (results.isEmpty) {
                     return Center(
                       child: Text(
-                        "No results found.",
+                        AppLocalizations.getString(context, 'noResultsFound'),
                         style: TextStyle(color: Colors.grey),
                       ),
                     );

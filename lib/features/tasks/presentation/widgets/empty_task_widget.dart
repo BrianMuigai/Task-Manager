@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:task/core/l10n/app_localization.dart';
 
 class EmptyTasksWidget extends StatelessWidget {
   const EmptyTasksWidget({super.key});
@@ -18,8 +19,8 @@ class EmptyTasksWidget extends StatelessWidget {
             fit: BoxFit.contain,
           ),
           const SizedBox(height: 16),
-          const Text(
-            "No tasks for today!",
+          Text(
+            AppLocalizations.getString(context, 'noTaskToday'),
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.grey,
@@ -28,8 +29,8 @@ class EmptyTasksWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            "Tap the '+' button below to create a new task.",
+          Text(
+            AppLocalizations.getString(context, 'emptyTask'),
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.grey,

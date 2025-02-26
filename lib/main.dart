@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:task/core/di/injector.dart';
+import 'package:task/core/l10n/app_localization.dart';
 import 'package:task/core/l10n/locale_provider.dart';
 import 'package:task/core/observers/global_bloc_observer.dart';
 import 'package:task/core/services/push_notification_service.dart';
@@ -16,6 +17,7 @@ import 'package:task/features/auth/presentation/widgets/auth_wrapper.dart';
 import 'package:task/features/settings/presentation/bloc/settings_bloc.dart';
 import 'package:task/features/tasks/presentation/bloc/tasks_bloc.dart';
 import 'package:task/firebase_options.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -52,6 +54,7 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localeProvider = Provider.of<LocaleProvider>(context);
     return MultiBlocProvider(
       providers: [
         BlocProvider(
@@ -62,10 +65,21 @@ class App extends StatelessWidget {
             create: (context) => getIt<AuthBloc>()..add(AuthCheckRequested()))
       ],
       child: MaterialApp(
-        title: 'Task Manager (Clean Architecture with Bloc)',
         theme: buildLightTheme(),
         darkTheme: buildDarkTheme(),
         home: AuthWrapper(),
+        localizationsDelegates: [
+          AppLocalizations.delegate(),
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate
+        ],
+        supportedLocales: [
+          Locale('en'),
+          Locale('es'),
+          Locale('fr'),
+        ],
+        locale: localeProvider.locale,
       ),
     );
   }

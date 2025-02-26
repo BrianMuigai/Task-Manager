@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:task/core/l10n/app_localization.dart';
 
 class LiveUserStatusWidget extends StatelessWidget {
   final String taskId;
@@ -35,8 +36,8 @@ class LiveUserStatusWidget extends StatelessWidget {
           ),
           child: Text(
             users.length == 1
-                ? "${users.first} is editing this task"
-                : "${users.join(', ')} are editing this task",
+                ? "${users.first} ${AppLocalizations.getString(context, 'isEditingThisTask')}"
+                : "${users.join(', ')} ${AppLocalizations.getString(context, 'areEditingThisTask')}",
             style: TextStyle(color: Colors.blue[900]),
           ),
         );

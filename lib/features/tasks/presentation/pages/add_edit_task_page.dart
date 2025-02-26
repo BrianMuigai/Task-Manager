@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:task/core/app_dialogs.dart';
+import 'package:task/core/l10n/app_localization.dart';
 import 'package:task/features/auth/domain/entities/user.dart';
 import 'package:task/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:task/features/tasks/domain/entities/task.dart';
@@ -58,7 +59,7 @@ class _AddEditTaskPageState extends State<AddEditTaskPage> {
       firstDate: DateTime.now(),
       lastDate: DateTime(2100),
     );
-    if (pickedDate == null) return;
+    if (!mounted || pickedDate == null) return;
     final picked = await showTimePicker(
       context: context,
       initialTime: _startTime != null
@@ -84,20 +85,19 @@ class _AddEditTaskPageState extends State<AddEditTaskPage> {
       firstDate: DateTime.now(),
       lastDate: DateTime(2100),
     );
-    if (pickedDate != null) {
-      final pickedTime = await showTimePicker(
-        context: context,
-        initialTime: _dueDateTime != null
-            ? TimeOfDay.fromDateTime(_dueDateTime!)
-            : TimeOfDay.now(),
-      );
-      if (pickedTime != null) {
-        final newDue = DateTime(pickedDate.year, pickedDate.month,
-            pickedDate.day, pickedTime.hour, pickedTime.minute);
-        setState(() {
-          _dueDateTime = newDue;
-        });
-      }
+    if (!mounted || pickedDate == null) return;
+    final pickedTime = await showTimePicker(
+      context: context,
+      initialTime: _dueDateTime != null
+          ? TimeOfDay.fromDateTime(_dueDateTime!)
+          : TimeOfDay.now(),
+    );
+    if (pickedTime != null) {
+      final newDue = DateTime(pickedDate.year, pickedDate.month, pickedDate.day,
+          pickedTime.hour, pickedTime.minute);
+      setState(() {
+        _dueDateTime = newDue;
+      });
     }
   }
 
@@ -147,7 +147,8 @@ class _AddEditTaskPageState extends State<AddEditTaskPage> {
 
       if (_startTime != null && _dueDateTime != null) {
         if (_startTime!.isAfter(_dueDateTime!)) {
-          showErrorDialog(context, "Start time cannot be after due date!");
+          showErrorDialog(
+              context, AppLocalizations.getString(context, 'taskTimeError'));
           return;
         }
       }
@@ -199,7 +200,9 @@ class _AddEditTaskPageState extends State<AddEditTaskPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.task != null ? "Edit Task" : "New Task"),
+        title: Text(widget.task != null
+            ? AppLocalizations.getString(context, 'editTask')
+            : AppLocalizations.getString(context, 'newTask')),
         actions: widget.task != null
             ? [
                 IconButton(
@@ -219,18 +222,18 @@ class _AddEditTaskPageState extends State<AddEditTaskPage> {
               TextFormField(
                 controller: _titleController,
                 decoration: InputDecoration(
-                  labelText: "Task Title",
+                  labelText: AppLocalizations.getString(context, 'taskTitle'),
                   border: OutlineInputBorder(),
                 ),
                 validator: (value) => value == null || value.trim().isEmpty
-                    ? "Please enter a task title"
+                    ? AppLocalizations.getString(context, 'enterTaskTitle')
                     : null,
               ),
               SizedBox(height: 20),
               TextFormField(
                 controller: _descriptionController,
                 decoration: InputDecoration(
-                  labelText: "Task Description",
+                  labelText: AppLocalizations.getString(context, 'taskDescr'),
                   border: OutlineInputBorder(),
                 ),
                 maxLines: 3,
@@ -240,27 +243,39 @@ class _AddEditTaskPageState extends State<AddEditTaskPage> {
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 title: Text(_startTime != null
-                    ? "Start Time: ${DateFormat("hh:mm a").format(_startTime!)}"
-                    : "Set Start Time"),
+                    ? "${AppLocalizations.getString(context, 'startTime')}: ${DateFormat("hh:mm a").format(_startTime!)}"
+                    : "${AppLocalizations.getString(context, 'setStartTime')}"),
                 trailing: Icon(Icons.access_time),
                 onTap: () => _selectStartTime(context),
               ),
-              SizedBox(height: 20),
               // Due Date & Time
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 title: Text(_dueDateTime != null
-                    ? "Due Date: ${DateFormat("MMM d, yyyy hh:mm a").format(_dueDateTime!)}"
-                    : "Set Due Date & Time"),
+                    ? "${AppLocalizations.getString(context, 'dueDate')}: ${DateFormat("MMM d, yyyy hh:mm a").format(_dueDateTime!)}"
+                    : "${AppLocalizations.getString(context, 'setDueDateTime')}"),
                 trailing: Icon(Icons.calendar_today),
                 onTap: () => _selectDueDateTime(context),
               ),
               SizedBox(height: 20),
+              Divider(),
               // Collaborators field.
-              Text(
-                "Collaborators:",
-                style: TextStyle(fontWeight: FontWeight.bold),
+              Row(
+                children: [
+                  Text(
+                    "${AppLocalizations.getString(context, 'collaborators')}:",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  const Spacer(),
+                  TextButton.icon(
+                    onPressed: _showCollaboratorSearch,
+                    icon: Icon(Icons.search),
+                    label: Text(AppLocalizations.getString(
+                        context, 'addCollaborators')),
+                  ),
+                ],
               ),
+
               SizedBox(height: 8),
               Wrap(
                 spacing: 8,
@@ -275,15 +290,12 @@ class _AddEditTaskPageState extends State<AddEditTaskPage> {
                         ))
                     .toList(),
               ),
-              TextButton.icon(
-                onPressed: _showCollaboratorSearch,
-                icon: Icon(Icons.search),
-                label: Text("Add Collaborator"),
-              ),
+
               SizedBox(height: 10),
               // Completed toggle.
               SwitchListTile(
-                title: Text("Mark as Completed"),
+                title:
+                    Text(AppLocalizations.getString(context, 'markCompleted')),
                 value: _completed,
                 onChanged: (bool value) {
                   setState(() {
@@ -303,7 +315,9 @@ class _AddEditTaskPageState extends State<AddEditTaskPage> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Text(
-                    widget.task != null ? "Update Task" : "Save Task",
+                    widget.task != null
+                        ? AppLocalizations.getString(context, 'updateTask')
+                        : AppLocalizations.getString(context, 'saveTask'),
                     style: TextStyle(fontSize: 18),
                   ),
                 ),

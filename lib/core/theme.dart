@@ -1,20 +1,11 @@
 import 'package:flutter/material.dart';
 
-/// A sample brand color that matches the green accent from the reference image.
-/// Adjust as needed.
 const Color kBrandGreen = Color(0xFF23AA49);
-
-/// A near-white background color for light theme.
-const Color kLightBackground = Color(0xFFF5F5F5);
-
-/// A near-black background color for dark theme.
-const Color kDarkBackground = Color(0xFF121212);
 
 ThemeData buildLightTheme() {
   final base = ThemeData.light();
   return base.copyWith(
     brightness: Brightness.light,
-    scaffoldBackgroundColor: kLightBackground,
     colorScheme: base.colorScheme.copyWith(
       brightness: Brightness.light,
       primary: kBrandGreen,
@@ -70,7 +61,6 @@ ThemeData buildDarkTheme() {
   final base = ThemeData.dark();
   return base.copyWith(
     brightness: Brightness.dark,
-    scaffoldBackgroundColor: kDarkBackground,
     colorScheme: base.colorScheme.copyWith(
       brightness: Brightness.dark,
       primary: kBrandGreen,

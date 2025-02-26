@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SharedPreferencesManager {
   final SharedPreferences _sharedPreferences;
 
-  static String language = 'language';
+  static String settings = 'settings';
 
   SharedPreferencesManager(this._sharedPreferences);
 

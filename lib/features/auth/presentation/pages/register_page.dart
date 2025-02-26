@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:task/core/l10n/app_localization.dart';
 import 'package:task/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:task/features/settings/presentation/pages/settings_page.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -32,7 +34,20 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Register")),
+      appBar: AppBar(
+        title: Text(AppLocalizations.getString(context, 'register')),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SettingsPage()),
+              );
+            },
+          ),
+        ],
+      ),
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is RegistrationError) {
@@ -55,12 +70,12 @@ class _RegisterPageState extends State<RegisterPage> {
                       child: Column(
                         children: [
                           Text(
-                            "Create a new account",
+                            AppLocalizations.getString(context, 'createNewAcc'),
                             style: Theme.of(context).textTheme.headlineSmall,
                           ),
                           SizedBox(height: 8),
                           Text(
-                            "Sign up to manage your tasks, collaborate with your team, and stay organized. Please fill in the details below.",
+                            AppLocalizations.getString(context, 'signUpIntro'),
                             style: Theme.of(context).textTheme.bodyMedium,
                             textAlign: TextAlign.center,
                           ),
@@ -68,43 +83,50 @@ class _RegisterPageState extends State<RegisterPage> {
                           TextFormField(
                             controller: _displayNameController,
                             decoration: InputDecoration(
-                              labelText: "Display Name",
+                              labelText: AppLocalizations.getString(
+                                  context, 'displayName'),
                               border: OutlineInputBorder(),
                             ),
                             enabled: state is! AuthLoading,
                             validator: (value) => value == null || value.isEmpty
-                                ? "Please enter your name"
+                                ? AppLocalizations.getString(
+                                    context, 'enterName')
                                 : null,
                           ),
                           SizedBox(height: 16),
                           TextFormField(
                             controller: _emailController,
                             decoration: InputDecoration(
-                              labelText: "Email",
+                              labelText:
+                                  AppLocalizations.getString(context, 'email'),
                               border: OutlineInputBorder(),
                             ),
                             enabled: state is! AuthLoading,
                             validator: (value) => value == null || value.isEmpty
-                                ? "Please enter your email"
+                                ? AppLocalizations.getString(
+                                    context, 'enterEmail')
                                 : null,
                           ),
                           SizedBox(height: 16),
                           TextFormField(
                             controller: _passwordController,
                             decoration: InputDecoration(
-                              labelText: "Password",
+                              labelText: AppLocalizations.getString(
+                                  context, 'password'),
                               border: OutlineInputBorder(),
                             ),
                             obscureText: true,
                             enabled: state is! AuthLoading,
                             validator: (value) => value == null || value.isEmpty
-                                ? "Please enter a password"
+                                ? AppLocalizations.getString(
+                                    context, 'enterPassword')
                                 : null,
                           ),
                           SizedBox(height: 24),
                           ElevatedButton(
                             onPressed: state is AuthLoading ? null : _register,
-                            child: Text("Register"),
+                            child: Text(AppLocalizations.getString(
+                                context, 'register')),
                           ),
                           if (_errorMessage != null) ...[
                             SizedBox(height: 16),
@@ -116,7 +138,8 @@ class _RegisterPageState extends State<RegisterPage> {
                             onPressed: () {
                               Navigator.pop(context);
                             },
-                            child: Text("Already have an account? Login"),
+                            child: Text(AppLocalizations.getString(
+                                context, 'alreadyHaveAcc')),
                           ),
                         ],
                       ),

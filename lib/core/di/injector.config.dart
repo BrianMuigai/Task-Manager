@@ -27,6 +27,15 @@ import '../../features/auth/domain/usecases/sign_in_with_email_password.dart'
     as _i466;
 import '../../features/auth/domain/usecases/sign_in_with_google.dart' as _i692;
 import '../../features/auth/presentation/bloc/auth_bloc.dart' as _i797;
+import '../../features/settings/data/datasources/settings_datasource.dart'
+    as _i283;
+import '../../features/settings/data/repositories/settings_repository_impl.dart'
+    as _i955;
+import '../../features/settings/domain/repositories/settings_repository.dart'
+    as _i674;
+import '../../features/settings/domain/usecases/change_language.dart' as _i90;
+import '../../features/settings/domain/usecases/get_settings.dart' as _i558;
+import '../../features/settings/presentation/bloc/settings_bloc.dart' as _i585;
 import '../../features/tasks/data/datasources/firebase_task_datasource.dart'
     as _i873;
 import '../../features/tasks/data/repositories/task_repository_impl.dart'
@@ -98,6 +107,8 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i94.AddTaskToCalendar(gh<_i1004.CalendarService>()));
     gh.lazySingleton<_i770.DeleteTaskFromCalendar>(
         () => _i770.DeleteTaskFromCalendar(gh<_i1004.CalendarService>()));
+    gh.lazySingleton<_i283.SettingsDatasource>(
+        () => _i283.SettingsDatasource(gh<_i178.SharedPreferencesManager>()));
     gh.lazySingleton<_i1066.ResetPassword>(
         () => _i1066.ResetPassword(gh<_i787.AuthRepository>()));
     gh.lazySingleton<_i172.SearchUsers>(
@@ -108,6 +119,8 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i466.SignInWithEmailPassword(gh<_i787.AuthRepository>()));
     gh.lazySingleton<_i1003.RegisterWithEmailPassword>(
         () => _i1003.RegisterWithEmailPassword(gh<_i787.AuthRepository>()));
+    gh.lazySingleton<_i674.SettingsRepository>(
+        () => _i955.SettingsRepositoryImpl(gh<_i283.SettingsDatasource>()));
     gh.factory<_i797.AuthBloc>(() => _i797.AuthBloc(
           gh<_i692.SignInWithGoogle>(),
           gh<_i59.FirebaseAuth>(instanceName: 'firebaseAuth'),
@@ -124,6 +137,16 @@ extension GetItInjectableX on _i174.GetIt {
           gh<_i172.SearchUsers>(),
           gh<_i94.AddTaskToCalendar>(),
           gh<_i770.DeleteTaskFromCalendar>(),
+        ));
+    gh.lazySingleton<_i558.GetSettings>(
+        () => _i558.GetSettings(gh<_i674.SettingsRepository>()));
+    gh.lazySingleton<_i90.ChangeLanguage>(() => _i90.ChangeLanguage(
+          gh<_i674.SettingsRepository>(),
+          gh<_i558.GetSettings>(),
+        ));
+    gh.factory<_i585.SettingsBloc>(() => _i585.SettingsBloc(
+          gh<_i90.ChangeLanguage>(),
+          gh<_i558.GetSettings>(),
         ));
     return this;
   }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:task/core/di/injector.dart';
 import 'package:task/core/shared_preferences_manager.dart';
+import 'package:task/features/settings/data/models/settings_model.dart';
 
 class AppLocalizations {
   final Locale locale;
@@ -13,7 +14,7 @@ class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
-  static getString(BuildContext context, String str) =>
+  static String getString(BuildContext context, String str) =>
       AppLocalizations.of(context)?.translate(str) ?? str;
 
   static LocalizationsDelegate<AppLocalizations> delegate() =>
@@ -43,9 +44,14 @@ class _AppLocalizationsDelegate
   late String languageCode;
 
   _AppLocalizationsDelegate() {
-    languageCode = getIt<SharedPreferencesManager>()
-            .getString(SharedPreferencesManager.language) ??
-        'en';
+    final settingsString = getIt<SharedPreferencesManager>()
+        .getString(SharedPreferencesManager.settings);
+    if (settingsString == null) {
+      languageCode = 'en';
+    } else {
+      languageCode =
+          SettingsModel.fromJson(jsonDecode(settingsString)).langCode;
+    }
   }
 
   @override
