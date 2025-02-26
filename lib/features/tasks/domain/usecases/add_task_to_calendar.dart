@@ -9,17 +9,15 @@ class AddTaskToCalendar {
 
   AddTaskToCalendar(this.calendarService);
 
-  /// Returns the event id if the operation is successful, or null otherwise.
+  /// Returns the event id if successful, or null otherwise.
   Future<String?> call(Task task) async {
-    if (task.dueDate == null) return null;
-    final endTime =
-        task.dueDate!.add(Duration(hours: 1)); // Example: 1-hour event
+    if (task.startTime == null || task.dueDateTime == null) return null;
     return await calendarService.addOrUpdateEvent(
       title: task.title,
-      start: task.dueDate!,
-      end: endTime,
+      start: task.startTime!,
+      end: task.dueDateTime!,
       description: task.description,
-      existingEventId: task.calendarEventId, // Update if exists
+      existingEventId: task.calendarEventId,
     );
   }
 }

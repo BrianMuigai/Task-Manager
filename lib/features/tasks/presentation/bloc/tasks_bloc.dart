@@ -53,13 +53,13 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
           }
           // Both tasks have the same completion status.
           // If both have due dates, compare them.
-          if (a.dueDate != null && b.dueDate != null) {
-            return a.dueDate!.compareTo(b.dueDate!);
+          if (a.startTime != null && b.startTime != null) {
+            return a.startTime!.compareTo(b.startTime!);
           }
           // If only a has no due date, place it after b.
-          if (a.dueDate == null && b.dueDate != null) return 1;
+          if (a.startTime == null && b.startTime != null) return 1;
           // If only b has no due date, place it after a.
-          if (a.dueDate != null && b.dueDate == null) return -1;
+          if (a.startTime != null && b.startTime == null) return -1;
           // If both are null, they are equal.
           return 0;
         });
@@ -104,7 +104,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
       try {
         await updateTaskUseCase(event.task);
         // Update calendar event if dueDate is present.
-        if (event.task.dueDate != null) {
+        if (event.task.startTime != null || event.task.dueDateTime != null) {
           final eventId = await addTaskToCalendarUseCase(event.task);
           if (eventId != null) {
             // Update the task with the new calendar event id if needed.

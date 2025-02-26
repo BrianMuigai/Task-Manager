@@ -1,12 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:task/core/app_dialogs.dart';
 import 'package:task/features/auth/domain/entities/user.dart';
 import 'package:task/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:task/features/tasks/domain/entities/task.dart';
 import 'package:task/features/tasks/presentation/bloc/tasks_bloc.dart';
 import 'package:task/features/tasks/presentation/widgets/live_user_status_widget.dart';
 import 'package:task/features/tasks/presentation/widgets/search_collaborators_widget.dart';
+import 'package:intl/intl.dart';
 
 class AddEditTaskPage extends StatefulWidget {
   final Task? task;
@@ -22,7 +24,8 @@ class _AddEditTaskPageState extends State<AddEditTaskPage> {
   late TextEditingController _titleController;
   late TextEditingController _descriptionController;
   late AppUser currentUser;
-  DateTime? _dueDate;
+  DateTime? _startTime;
+  DateTime? _dueDateTime;
   bool _completed = false;
   List<String> _collaboratorIds = [];
 
@@ -32,7 +35,8 @@ class _AddEditTaskPageState extends State<AddEditTaskPage> {
     _titleController = TextEditingController(text: widget.task?.title ?? '');
     _descriptionController =
         TextEditingController(text: widget.task?.description ?? '');
-    _dueDate = widget.task?.dueDate;
+    _startTime = widget.task?.startTime;
+    _dueDateTime = widget.task?.dueDateTime;
     _completed = widget.task?.completed ?? false;
     _collaboratorIds = widget.task?.collaboratorIds ?? [];
     currentUser = (context.read<AuthBloc>().state as Authenticated).user;
@@ -46,17 +50,54 @@ class _AddEditTaskPageState extends State<AddEditTaskPage> {
     }
   }
 
-  Future<void> _selectDueDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+  Future<void> _selectStartTime(BuildContext context) async {
+    // Pick the date first.
+    final pickedDate = await showDatePicker(
       context: context,
-      initialDate: _dueDate ?? DateTime.now(),
+      initialDate: _dueDateTime ?? DateTime.now(),
       firstDate: DateTime.now(),
       lastDate: DateTime(2100),
     );
+    if (pickedDate == null) return;
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: _startTime != null
+          ? TimeOfDay.fromDateTime(_startTime!)
+          : TimeOfDay.now(),
+    );
     if (picked != null) {
+      final now = DateTime(pickedDate.year, pickedDate.month, pickedDate.day,
+          picked.hour, picked.minute);
+      final newStart =
+          DateTime(now.year, now.month, now.day, picked.hour, picked.minute);
       setState(() {
-        _dueDate = picked;
+        _startTime = newStart;
       });
+    }
+  }
+
+  Future<void> _selectDueDateTime(BuildContext context) async {
+    // Pick the date first.
+    final pickedDate = await showDatePicker(
+      context: context,
+      initialDate: _dueDateTime ?? DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2100),
+    );
+    if (pickedDate != null) {
+      final pickedTime = await showTimePicker(
+        context: context,
+        initialTime: _dueDateTime != null
+            ? TimeOfDay.fromDateTime(_dueDateTime!)
+            : TimeOfDay.now(),
+      );
+      if (pickedTime != null) {
+        final newDue = DateTime(pickedDate.year, pickedDate.month,
+            pickedDate.day, pickedTime.hour, pickedTime.minute);
+        setState(() {
+          _dueDateTime = newDue;
+        });
+      }
     }
   }
 
@@ -101,8 +142,14 @@ class _AddEditTaskPageState extends State<AddEditTaskPage> {
       if (authState is Authenticated) {
         ownerId = authState.user.uid;
       } else {
-        // Fallback or error handling if needed.
-        ownerId = "unknown";
+        return;
+      }
+
+      if (_startTime != null && _dueDateTime != null) {
+        if (_startTime!.isAfter(_dueDateTime!)) {
+          showErrorDialog(context, "Start time cannot be after due date!");
+          return;
+        }
       }
 
       // If editing, use the existing id; otherwise, generate one.
@@ -110,7 +157,8 @@ class _AddEditTaskPageState extends State<AddEditTaskPage> {
       final Task newTask = Task(
           id: id,
           title: _titleController.text,
-          dueDate: _dueDate,
+          startTime: _startTime,
+          dueDateTime: _dueDateTime,
           completed: _completed,
           ownerId: ownerId,
           collaboratorIds: _collaboratorIds,
@@ -188,14 +236,24 @@ class _AddEditTaskPageState extends State<AddEditTaskPage> {
                 maxLines: 3,
               ),
               SizedBox(height: 20),
-              // Due date field.
+              // Start Time
               ListTile(
                 contentPadding: EdgeInsets.zero,
-                title: Text(_dueDate != null
-                    ? "Due Date: ${_dueDate!.toLocal().toString().split(' ')[0]}"
-                    : "Set Due Date"),
+                title: Text(_startTime != null
+                    ? "Start Time: ${DateFormat("hh:mm a").format(_startTime!)}"
+                    : "Set Start Time"),
+                trailing: Icon(Icons.access_time),
+                onTap: () => _selectStartTime(context),
+              ),
+              SizedBox(height: 20),
+              // Due Date & Time
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text(_dueDateTime != null
+                    ? "Due Date: ${DateFormat("MMM d, yyyy hh:mm a").format(_dueDateTime!)}"
+                    : "Set Due Date & Time"),
                 trailing: Icon(Icons.calendar_today),
-                onTap: () => _selectDueDate(context),
+                onTap: () => _selectDueDateTime(context),
               ),
               SizedBox(height: 20),
               // Collaborators field.

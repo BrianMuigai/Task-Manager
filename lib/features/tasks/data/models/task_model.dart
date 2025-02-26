@@ -6,7 +6,8 @@ class TaskModel extends Task {
     required super.id,
     required super.title,
     required super.description,
-    super.dueDate,
+    super.startTime,
+    super.dueDateTime,
     super.completed,
     required super.ownerId,
     super.collaboratorIds,
@@ -19,8 +20,11 @@ class TaskModel extends Task {
     return TaskModel(
         id: doc.id,
         title: data['title'] ?? '',
-        dueDate: data['dueDate'] != null
-            ? (data['dueDate'] as Timestamp).toDate()
+        startTime: data['startTime'] != null
+            ? (data['startTime'] as Timestamp).toDate()
+            : null,
+        dueDateTime: data['dueDateTime'] != null
+            ? (data['dueDateTime'] as Timestamp).toDate()
             : null,
         completed: data['completed'] ?? false,
         ownerId: data['ownerId'] ?? '',
@@ -38,7 +42,9 @@ class TaskModel extends Task {
     return {
       'title': title,
       'description': description,
-      'dueDate': dueDate != null ? Timestamp.fromDate(dueDate!) : null,
+      'startTime': startTime != null ? Timestamp.fromDate(startTime!) : null,
+      'dueDateTime':
+          dueDateTime != null ? Timestamp.fromDate(dueDateTime!) : null,
       'completed': completed,
       'ownerId': ownerId,
       'collaboratorIds': collaboratorIds,

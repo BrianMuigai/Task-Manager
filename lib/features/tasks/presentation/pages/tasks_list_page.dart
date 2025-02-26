@@ -115,9 +115,9 @@ class _TasksListPageState extends State<TasksListPage> {
                                         fontSize: 18,
                                       ),
                                     ),
-                                    subtitle: task.dueDate != null
+                                    subtitle: task.dueDateTime != null
                                         ? Text(
-                                            "Due: ${task.dueDate!.toLocal().toString().split(' ')[0]}")
+                                            "Due: ${task.dueDateTime!.toLocal().toString().split(' ')[0]}")
                                         : Text("No due date"),
                                     trailing: Checkbox(
                                       value: task.completed,

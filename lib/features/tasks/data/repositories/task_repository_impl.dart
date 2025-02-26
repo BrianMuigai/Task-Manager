@@ -27,7 +27,8 @@ class TaskRepositoryImpl implements TaskRepository {
     final taskModel = TaskModel(
         id: task.id,
         title: task.title,
-        dueDate: task.dueDate,
+        startTime: task.startTime,
+        dueDateTime: task.dueDateTime,
         completed: task.completed,
         ownerId: task.ownerId,
         collaboratorIds: task.collaboratorIds,
@@ -41,7 +42,8 @@ class TaskRepositoryImpl implements TaskRepository {
     final taskModel = TaskModel(
         id: task.id,
         title: task.title,
-        dueDate: task.dueDate,
+        startTime: task.startTime,
+        dueDateTime: task.dueDateTime,
         completed: task.completed,
         ownerId: task.ownerId,
         collaboratorIds: task.collaboratorIds,
