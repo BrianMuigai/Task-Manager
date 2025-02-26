@@ -11,6 +11,7 @@ class TaskModel extends Task {
     required super.ownerId,
     super.collaboratorIds,
     super.updatedAt,
+    super.calendarEventId,
   });
 
   factory TaskModel.fromDocument(DocumentSnapshot doc) {
@@ -29,7 +30,8 @@ class TaskModel extends Task {
         updatedAt: data['updatedAt'] != null
             ? (data['updatedAt'] as Timestamp).toDate()
             : null,
-        description: data['description'] ?? '');
+        description: data['description'] ?? '',
+        calendarEventId: data['calendarEventId']);
   }
 
   Map<String, dynamic> toMap() {
@@ -43,6 +45,7 @@ class TaskModel extends Task {
       'updatedAt': updatedAt != null
           ? Timestamp.fromDate(updatedAt!)
           : FieldValue.serverTimestamp(),
+      'calendarEventId': calendarEventId
     };
   }
 }

@@ -32,3 +32,7 @@ class CollaboratorsSearchError extends TasksState {
   final String message;
   const CollaboratorsSearchError(this.message);
 }
+
+class CalendarSyncSuccess extends TasksState {}
+
+class CalendarSyncFailure extends TasksState {}

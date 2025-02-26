@@ -33,10 +33,14 @@ import '../../features/tasks/data/repositories/task_repository_impl.dart'
     as _i20;
 import '../../features/tasks/domain/repositories/task_repository.dart' as _i148;
 import '../../features/tasks/domain/usecases/add_task.dart' as _i793;
+import '../../features/tasks/domain/usecases/add_task_to_calendar.dart' as _i94;
 import '../../features/tasks/domain/usecases/delete_task.dart' as _i840;
+import '../../features/tasks/domain/usecases/delete_task_from_calendar.dart'
+    as _i770;
 import '../../features/tasks/domain/usecases/get_tasks.dart' as _i517;
 import '../../features/tasks/domain/usecases/update_task.dart' as _i739;
 import '../../features/tasks/presentation/bloc/tasks_bloc.dart' as _i447;
+import '../services/calendar_service.dart' as _i1004;
 import '../shared_preferences_manager.dart' as _i178;
 import 'module_injector.dart' as _i759;
 
@@ -56,6 +60,7 @@ extension GetItInjectableX on _i174.GetIt {
       () => registerModules.prefs(),
       preResolve: true,
     );
+    gh.lazySingleton<_i1004.CalendarService>(() => _i1004.CalendarService());
     gh.lazySingleton<_i873.FirebaseTaskDataSource>(
         () => _i873.FirebaseTaskDataSource());
     gh.lazySingleton<_i148.TaskRepository>(() => _i20.TaskRepositoryImpl(
@@ -89,6 +94,10 @@ extension GetItInjectableX on _i174.GetIt {
         () => _i739.UpdateTask(gh<_i148.TaskRepository>()));
     gh.lazySingleton<_i840.DeleteTask>(
         () => _i840.DeleteTask(gh<_i148.TaskRepository>()));
+    gh.lazySingleton<_i94.AddTaskToCalendar>(
+        () => _i94.AddTaskToCalendar(gh<_i1004.CalendarService>()));
+    gh.lazySingleton<_i770.DeleteTaskFromCalendar>(
+        () => _i770.DeleteTaskFromCalendar(gh<_i1004.CalendarService>()));
     gh.lazySingleton<_i1066.ResetPassword>(
         () => _i1066.ResetPassword(gh<_i787.AuthRepository>()));
     gh.lazySingleton<_i172.SearchUsers>(
@@ -113,6 +122,8 @@ extension GetItInjectableX on _i174.GetIt {
           gh<_i840.DeleteTask>(),
           gh<_i517.GetTasksStream>(),
           gh<_i172.SearchUsers>(),
+          gh<_i94.AddTaskToCalendar>(),
+          gh<_i770.DeleteTaskFromCalendar>(),
         ));
     return this;
   }

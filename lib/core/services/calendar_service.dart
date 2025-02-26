@@ -1,9 +1,11 @@
 import 'package:device_calendar/device_calendar.dart';
+import 'package:injectable/injectable.dart';
+import 'package:timezone/timezone.dart' as tz;
 
+@lazySingleton
 class CalendarService {
   final DeviceCalendarPlugin _deviceCalendarPlugin = DeviceCalendarPlugin();
 
-  /// Retrieves the first available calendar ID.
   Future<String?> getDefaultCalendarId() async {
     final calendarsResult = await _deviceCalendarPlugin.retrieveCalendars();
     if (!calendarsResult.isSuccess ||
@@ -11,49 +13,55 @@ class CalendarService {
         calendarsResult.data!.isEmpty) {
       return null;
     }
-    // Return the ID of the first available calendar.
     return calendarsResult.data!.first.id;
   }
 
-  /// Adds (or updates) an event to the local device calendar.
-  Future<bool> addEventToCalendar({
+  /// Adds or updates an event. If [existingEventId] is provided, it updates that event.
+  Future<String?> addOrUpdateEvent({
     required String title,
     required DateTime start,
     required DateTime end,
     String? description,
+    String? existingEventId,
   }) async {
-    // Check for existing calendar permissions.
     final permissionsResult = await _deviceCalendarPlugin.hasPermissions();
     bool permissionsGranted = permissionsResult.data ?? false;
     if (!permissionsGranted) {
-      // Request permissions if not already granted.
       final requestPermissionsResult =
           await _deviceCalendarPlugin.requestPermissions();
       permissionsGranted = requestPermissionsResult.data ?? false;
       if (!permissionsGranted) {
-        return false; // Permissions not granted.
+        return null;
       }
     }
 
-    // Retrieve the default calendar ID.
     final calendarId = await getDefaultCalendarId();
-    if (calendarId == null) {
-      return false; // No available calendar.
-    }
+    if (calendarId == null) return null;
 
-    // Create a new event.
+    final tzStart = tz.TZDateTime.from(start, tz.local);
+    final tzEnd = tz.TZDateTime.from(end, tz.local);
+
     final event = Event(
       calendarId,
+      eventId: existingEventId,
       title: title,
-      // start: start,
-      // end: end,
+      start: tzStart,
+      end: tzEnd,
       description: description,
     );
 
-    // Create or update the event.
-    final createOrUpdateResult =
-        await _deviceCalendarPlugin.createOrUpdateEvent(event);
-    return (createOrUpdateResult?.isSuccess ?? false) &&
-        (createOrUpdateResult?.data?.isNotEmpty ?? false);
+    final result = await _deviceCalendarPlugin.createOrUpdateEvent(event);
+    if ((result?.isSuccess ?? false) && (result?.data?.isNotEmpty ?? false)) {
+      return result?.data; // Returns eventId
+    }
+    return null;
+  }
+
+  /// Deletes an event from the calendar using its eventId.
+  Future<bool> deleteEvent(String eventId) async {
+    final calendarId = await getDefaultCalendarId();
+    if (calendarId == null) return false;
+    final result = await _deviceCalendarPlugin.deleteEvent(calendarId, eventId);
+    return result.isSuccess;
   }
 }

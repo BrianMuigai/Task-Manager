@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
@@ -7,7 +7,9 @@ import 'package:task/features/auth/domain/entities/user.dart';
 import 'package:task/features/auth/domain/usecases/search_users.dart';
 import 'package:task/features/tasks/domain/entities/task.dart';
 import 'package:task/features/tasks/domain/usecases/add_task.dart';
+import 'package:task/features/tasks/domain/usecases/add_task_to_calendar.dart';
 import 'package:task/features/tasks/domain/usecases/delete_task.dart';
+import 'package:task/features/tasks/domain/usecases/delete_task_from_calendar.dart';
 import 'package:task/features/tasks/domain/usecases/get_tasks.dart';
 import 'package:task/features/tasks/domain/usecases/update_task.dart';
 
@@ -22,6 +24,8 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
   final DeleteTask deleteTaskUseCase;
   final GetTasksStream getTasksStreamUseCase;
   final SearchUsers searchUsersUseCase;
+  final AddTaskToCalendar addTaskToCalendarUseCase;
+  final DeleteTaskFromCalendar deleteTaskFromCalendarUseCase;
 
   StreamSubscription? _tasksSubscription;
 
@@ -32,6 +36,8 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     this.deleteTaskUseCase,
     this.getTasksStreamUseCase,
     this.searchUsersUseCase,
+    this.addTaskToCalendarUseCase,
+    this.deleteTaskFromCalendarUseCase,
   ) : super(TasksInitial()) {
     on<LoadTasksEvent>((event, emit) async {
       emit(TasksLoading());
@@ -77,6 +83,18 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
         await addTaskUseCase(event.task);
         final tasks = await getTasksUseCase();
         emit(TasksLoaded(tasks));
+
+        final eventId = await addTaskToCalendarUseCase(event.task);
+        if (eventId != null) {
+          // Update the task with the new calendar event id.
+          final updatedTask = event.task.copyWith(calendarEventId: eventId);
+          await updateTaskUseCase(updatedTask);
+          final tasksAfterUpdate = await getTasksUseCase();
+          emit(TasksLoaded(tasksAfterUpdate));
+          emit(CalendarSyncSuccess());
+        } else {
+          emit(CalendarSyncFailure());
+        }
       } catch (e) {
         emit(TasksError("Failed to add task: ${e.toString()}"));
       }
@@ -85,6 +103,18 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     on<UpdateTaskEvent>((event, emit) async {
       try {
         await updateTaskUseCase(event.task);
+        // Update calendar event if dueDate is present.
+        if (event.task.dueDate != null) {
+          final eventId = await addTaskToCalendarUseCase(event.task);
+          if (eventId != null) {
+            // Update the task with the new calendar event id if needed.
+            final updatedTask = event.task.copyWith(calendarEventId: eventId);
+            await updateTaskUseCase(updatedTask);
+            emit(CalendarSyncSuccess());
+          } else {
+            emit(CalendarSyncFailure());
+          }
+        }
         // Reload tasks after updating
         final tasks = await getTasksUseCase();
         emit(TasksLoaded(tasks));
@@ -95,6 +125,13 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
 
     on<DeleteTaskEvent>((event, emit) async {
       try {
+        // Before deleting, if the task has a calendar event, delete it.
+        final currentTasks = await getTasksUseCase();
+        final taskToDelete =
+            currentTasks.firstWhereOrNull((t) => t.id == event.taskId);
+        if (taskToDelete != null && taskToDelete.calendarEventId != null) {
+          await deleteTaskFromCalendarUseCase(taskToDelete.calendarEventId!);
+        }
         await deleteTaskUseCase(event.taskId);
         // Reload tasks after deleting
         final tasks = await getTasksUseCase();

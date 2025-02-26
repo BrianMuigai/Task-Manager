@@ -36,12 +36,14 @@ class _AddEditTaskPageState extends State<AddEditTaskPage> {
     _completed = widget.task?.completed ?? false;
     _collaboratorIds = widget.task?.collaboratorIds ?? [];
     currentUser = (context.read<AuthBloc>().state as Authenticated).user;
-    FirebaseFirestore.instance
-        .collection('tasks')
-        .doc(widget.task?.id ?? 'newTaskId')
-        .update({
-      'editingUsers.${currentUser.uid}': currentUser.displayName,
-    });
+    if (widget.task != null) {
+      FirebaseFirestore.instance
+          .collection('tasks')
+          .doc(widget.task?.id ?? 'newTaskId')
+          .update({
+        'editingUsers.${currentUser.uid}': currentUser.displayName,
+      });
+    }
   }
 
   Future<void> _selectDueDate(BuildContext context) async {
@@ -134,12 +136,14 @@ class _AddEditTaskPageState extends State<AddEditTaskPage> {
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
-    FirebaseFirestore.instance
-        .collection('tasks')
-        .doc(widget.task?.id ?? 'newTaskId')
-        .update({
-      'editingUsers.${currentUser.uid}': FieldValue.delete(),
-    });
+    if (widget.task != null) {
+      FirebaseFirestore.instance
+          .collection('tasks')
+          .doc(widget.task?.id ?? 'newTaskId')
+          .update({
+        'editingUsers.${currentUser.uid}': FieldValue.delete(),
+      });
+    }
     super.dispose();
   }
 
