@@ -37,6 +37,26 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
       emit(TasksLoading());
       try {
         final tasks = await getTasksUseCase();
+        // Sort tasks:
+        // 1. Uncompleted tasks come first.
+        // 2. Then sort by due date. Tasks without due date come last.
+        tasks.sort((a, b) {
+          // Bring uncompleted tasks first.
+          if (a.completed != b.completed) {
+            return a.completed ? 1 : -1;
+          }
+          // Both tasks have the same completion status.
+          // If both have due dates, compare them.
+          if (a.dueDate != null && b.dueDate != null) {
+            return a.dueDate!.compareTo(b.dueDate!);
+          }
+          // If only a has no due date, place it after b.
+          if (a.dueDate == null && b.dueDate != null) return 1;
+          // If only b has no due date, place it after a.
+          if (a.dueDate != null && b.dueDate == null) return -1;
+          // If both are null, they are equal.
+          return 0;
+        });
         emit(TasksLoaded(tasks));
       } catch (e) {
         emit(TasksError("Failed to load tasks: ${e.toString()}"));

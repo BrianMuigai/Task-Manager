@@ -49,7 +49,7 @@ ThemeData buildLightTheme() {
         borderRadius: BorderRadius.circular(10),
       ),
       labelStyle: TextStyle(color: Colors.black87),
-      hintStyle: TextStyle(color: Colors.grey),
+      hintStyle: TextStyle(color: Colors.black),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(

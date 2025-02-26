@@ -4,6 +4,7 @@ import 'package:task/features/settings/presentation/pages/settings_page.dart';
 import 'package:task/features/tasks/domain/entities/task.dart';
 import 'package:task/features/tasks/presentation/bloc/tasks_bloc.dart';
 import 'package:task/features/tasks/presentation/pages/add_edit_task_page.dart';
+import 'package:task/features/tasks/presentation/widgets/empty_task_widget.dart';
 
 class TasksListPage extends StatefulWidget {
   const TasksListPage({super.key});
@@ -14,6 +15,7 @@ class TasksListPage extends StatefulWidget {
 
 class _TasksListPageState extends State<TasksListPage> {
   String searchQuery = "";
+  final double _itemHeight = 80.0;
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +45,13 @@ class _TasksListPageState extends State<TasksListPage> {
         child: Column(
           children: [
             SearchBar(
+              hintText: "Search Tasks...",
+              leading: Icon(Icons.search,
+                  color: Theme.of(context)
+                          .inputDecorationTheme
+                          .labelStyle
+                          ?.color ??
+                      Colors.white70),
               onChanged: (query) {
                 setState(() {
                   searchQuery = query;
@@ -53,64 +62,78 @@ class _TasksListPageState extends State<TasksListPage> {
             Expanded(
               child: BlocBuilder<TasksBloc, TasksState>(
                 builder: (context, state) {
-                  if (state is TasksLoading) {
-                    return Center(child: CircularProgressIndicator());
-                  } else if (state is TasksLoaded) {
+                  if (state is TasksLoaded) {
+                    if (state.tasks.isEmpty) {
+                      return EmptyTasksWidget();
+                    }
                     final filteredTasks = state.tasks
                         .where((task) => task.title
                             .toLowerCase()
                             .contains(searchQuery.toLowerCase()))
                         .toList();
-                    return ListView.builder(
-                      itemCount: filteredTasks.length,
-                      itemBuilder: (context, index) {
-                        final Task task = filteredTasks[index];
-                        return Card(
-                          margin:
-                              EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          elevation: 2,
-                          child: ListTile(
-                            title: Text(
-                              task.title,
-                              style: TextStyle(
-                                decoration: task.completed
-                                    ? TextDecoration.lineThrough
-                                    : null,
-                                fontSize: 18,
-                              ),
-                            ),
-                            subtitle: task.dueDate != null
-                                ? Text(
-                                    "Due: ${task.dueDate!.toLocal().toString().split(' ')[0]}")
-                                : null,
-                            trailing: Checkbox(
-                              value: task.completed,
-                              onChanged: (value) {
-                                final updatedTask =
-                                    task.copyWith(completed: value ?? false);
-                                context
-                                    .read<TasksBloc>()
-                                    .add(UpdateTaskEvent(updatedTask));
-                              },
-                            ),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      AddEditTaskPage(task: task),
+                    return SingleChildScrollView(
+                      child: SizedBox(
+                        height: filteredTasks.length * _itemHeight,
+                        child: Stack(
+                          children: filteredTasks.asMap().entries.map((entry) {
+                            int index = entry.key;
+                            Task task = entry.value;
+                            return AnimatedPositioned(
+                              key: ValueKey(task.id),
+                              duration: Duration(milliseconds: 800),
+                              curve: Curves.easeInOut,
+                              top: index * _itemHeight,
+                              left: 0,
+                              right: 0,
+                              height: _itemHeight,
+                              child: Card(
+                                margin: EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 6),
+                                elevation: 2,
+                                child: ListTile(
+                                  title: Text(
+                                    task.title,
+                                    style: TextStyle(
+                                      decoration: task.completed
+                                          ? TextDecoration.lineThrough
+                                          : null,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                  subtitle: task.dueDate != null
+                                      ? Text(
+                                          "Due: ${task.dueDate!.toLocal().toString().split(' ')[0]}")
+                                      : Text("No due date"),
+                                  trailing: Checkbox(
+                                    value: task.completed,
+                                    onChanged: (value) {
+                                      final updatedTask = task.copyWith(
+                                          completed: value ?? false);
+                                      context
+                                          .read<TasksBloc>()
+                                          .add(UpdateTaskEvent(updatedTask));
+                                    },
+                                  ),
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            AddEditTaskPage(task: task),
+                                      ),
+                                    );
+                                  },
                                 ),
-                              );
-                            },
-                          ),
-                        );
-                      },
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
                     );
                   } else if (state is TasksError) {
                     return Center(child: Text(state.message));
-                  } else {
-                    return Center(child: Text("Unknown state"));
                   }
+                  return Center(child: CircularProgressIndicator());
                 },
               ),
             ),
