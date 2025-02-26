@@ -24,6 +24,8 @@ class _AddEditTaskPageState extends State<AddEditTaskPage> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _titleController;
   late TextEditingController _descriptionController;
+  int? _priority;
+  late TextEditingController _tagsController;
   late AppUser currentUser;
   DateTime? _startTime;
   DateTime? _dueDateTime;
@@ -40,6 +42,9 @@ class _AddEditTaskPageState extends State<AddEditTaskPage> {
     _dueDateTime = widget.task?.dueDateTime;
     _completed = widget.task?.completed ?? false;
     _collaboratorIds = widget.task?.collaboratorIds ?? [];
+    _priority = widget.task?.priority; // May be null for new tasks.
+    _tagsController =
+        TextEditingController(text: widget.task?.tags?.join(', ') ?? '');
     currentUser = (context.read<AuthBloc>().state as Authenticated).user;
     if (widget.task != null) {
       FirebaseFirestore.instance
@@ -152,19 +157,27 @@ class _AddEditTaskPageState extends State<AddEditTaskPage> {
           return;
         }
       }
-
+      // Convert tags from comma-separated string to list.
+      List<String> tags = _tagsController.text
+          .split(',')
+          .map((e) => e.trim())
+          .where((e) => e.isNotEmpty)
+          .toList();
       // If editing, use the existing id; otherwise, generate one.
       final String id = widget.task?.id ?? UniqueKey().toString();
       final Task newTask = Task(
-          id: id,
-          title: _titleController.text,
-          startTime: _startTime,
-          dueDateTime: _dueDateTime,
-          completed: _completed,
-          ownerId: ownerId,
-          collaboratorIds: _collaboratorIds,
-          updatedAt: DateTime.now(),
-          description: _descriptionController.text);
+        id: id,
+        title: _titleController.text,
+        startTime: _startTime,
+        dueDateTime: _dueDateTime,
+        completed: _completed,
+        ownerId: ownerId,
+        collaboratorIds: _collaboratorIds,
+        updatedAt: DateTime.now(),
+        description: _descriptionController.text,
+        priority: _priority,
+        tags: tags,
+      );
       if (widget.task != null) {
         context.read<TasksBloc>().add(UpdateTaskEvent(newTask));
       } else {
@@ -185,6 +198,7 @@ class _AddEditTaskPageState extends State<AddEditTaskPage> {
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
+    _tagsController.dispose();
     if (widget.task != null) {
       FirebaseFirestore.instance
           .collection('tasks')
@@ -244,7 +258,7 @@ class _AddEditTaskPageState extends State<AddEditTaskPage> {
                 contentPadding: EdgeInsets.zero,
                 title: Text(_startTime != null
                     ? "${AppLocalizations.getString(context, 'startTime')}: ${DateFormat("hh:mm a").format(_startTime!)}"
-                    : "${AppLocalizations.getString(context, 'setStartTime')}"),
+                    : AppLocalizations.getString(context, 'setStartTime')),
                 trailing: Icon(Icons.access_time),
                 onTap: () => _selectStartTime(context),
               ),
@@ -253,7 +267,7 @@ class _AddEditTaskPageState extends State<AddEditTaskPage> {
                 contentPadding: EdgeInsets.zero,
                 title: Text(_dueDateTime != null
                     ? "${AppLocalizations.getString(context, 'dueDate')}: ${DateFormat("MMM d, yyyy hh:mm a").format(_dueDateTime!)}"
-                    : "${AppLocalizations.getString(context, 'setDueDateTime')}"),
+                    : AppLocalizations.getString(context, 'setDueDateTime')),
                 trailing: Icon(Icons.calendar_today),
                 onTap: () => _selectDueDateTime(context),
               ),
@@ -275,8 +289,13 @@ class _AddEditTaskPageState extends State<AddEditTaskPage> {
                   ),
                 ],
               ),
+              if (_collaboratorIds.isEmpty)
+                Text(
+                  AppLocalizations.getString(context, 'noResultsFound'),
+                  textAlign: TextAlign.center,
+                ),
 
-              SizedBox(height: 8),
+              SizedBox(height: 10),
               Wrap(
                 spacing: 8,
                 children: _collaboratorIds
@@ -290,7 +309,40 @@ class _AddEditTaskPageState extends State<AddEditTaskPage> {
                         ))
                     .toList(),
               ),
-
+              // Priority Dropdown
+              DropdownButtonFormField<int>(
+                value: _priority,
+                decoration: InputDecoration(
+                  labelText: "Priority",
+                  border: OutlineInputBorder(),
+                ),
+                items: [
+                  DropdownMenuItem(
+                      value: 1,
+                      child: Text(AppLocalizations.getString(context, 'high'))),
+                  DropdownMenuItem(
+                      value: 2,
+                      child:
+                          Text(AppLocalizations.getString(context, 'medium'))),
+                  DropdownMenuItem(
+                      value: 3,
+                      child: Text(AppLocalizations.getString(context, 'low'))),
+                ],
+                onChanged: (value) {
+                  setState(() {
+                    _priority = value;
+                  });
+                },
+              ),
+              SizedBox(height: 20),
+              // Tags Field
+              TextFormField(
+                controller: _tagsController,
+                decoration: InputDecoration(
+                  labelText: "Tags (comma separated)",
+                  border: OutlineInputBorder(),
+                ),
+              ),
               SizedBox(height: 10),
               // Completed toggle.
               SwitchListTile(

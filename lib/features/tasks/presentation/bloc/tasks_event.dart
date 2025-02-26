@@ -35,3 +35,13 @@ class SearchCollaboratorsEvent extends TasksEvent {
     required this.currentUserId,
   });
 }
+
+class FilterTasksEvent extends TasksEvent {
+  final String? name;
+  final DateTime?
+      date; // we assume filtering tasks with dueDateTime on a given day
+  final int? priority;
+  final List<String>? tags;
+
+  const FilterTasksEvent({this.name, this.date, this.priority, this.tags});
+}

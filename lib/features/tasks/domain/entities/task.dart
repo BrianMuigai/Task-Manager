@@ -11,6 +11,8 @@ class Task extends Equatable {
   final List<String> collaboratorIds;
   final DateTime? updatedAt;
   final String? calendarEventId;
+  final int? priority; // e.g., 1 = High, 2 = Medium, 3 = Low
+  final List<String>? tags;
 
   const Task({
     required this.id,
@@ -23,30 +25,38 @@ class Task extends Equatable {
     required this.description,
     this.startTime,
     this.dueDateTime,
+    this.priority,
+    this.tags,
   });
 
-  Task copyWith(
-      {String? id,
-      String? title,
-      DateTime? startTime,
-      DateTime? dueDateTime,
-      bool? completed,
-      String? ownerId,
-      List<String>? collaboratorIds,
-      DateTime? updatedAt,
-      String? description,
-      String? calendarEventId}) {
+  Task copyWith({
+    String? id,
+    String? title,
+    DateTime? startTime,
+    DateTime? dueDateTime,
+    bool? completed,
+    String? ownerId,
+    List<String>? collaboratorIds,
+    DateTime? updatedAt,
+    String? description,
+    String? calendarEventId,
+    int? priority,
+    List<String>? tags,
+  }) {
     return Task(
-        id: id ?? this.id,
-        title: title ?? this.title,
-        startTime: startTime ?? this.startTime,
-        dueDateTime: dueDateTime ?? this.dueDateTime,
-        completed: completed ?? this.completed,
-        ownerId: ownerId ?? this.ownerId,
-        collaboratorIds: collaboratorIds ?? this.collaboratorIds,
-        updatedAt: updatedAt ?? this.updatedAt,
-        description: description ?? this.description,
-        calendarEventId: calendarEventId ?? this.calendarEventId);
+      id: id ?? this.id,
+      title: title ?? this.title,
+      startTime: startTime ?? this.startTime,
+      dueDateTime: dueDateTime ?? this.dueDateTime,
+      completed: completed ?? this.completed,
+      ownerId: ownerId ?? this.ownerId,
+      collaboratorIds: collaboratorIds ?? this.collaboratorIds,
+      updatedAt: updatedAt ?? this.updatedAt,
+      description: description ?? this.description,
+      calendarEventId: calendarEventId ?? this.calendarEventId,
+      priority: priority ?? this.priority,
+      tags: tags ?? this.tags,
+    );
   }
 
   @override
@@ -60,6 +70,8 @@ class Task extends Equatable {
         collaboratorIds,
         updatedAt,
         description,
-        calendarEventId
+        calendarEventId,
+        priority,
+        tags,
       ];
 }

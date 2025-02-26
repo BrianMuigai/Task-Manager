@@ -6,6 +6,7 @@ import 'package:task/features/tasks/domain/entities/task.dart';
 import 'package:task/features/tasks/presentation/bloc/tasks_bloc.dart';
 import 'package:task/features/tasks/presentation/pages/add_edit_task_page.dart';
 import 'package:task/features/tasks/presentation/widgets/empty_task_widget.dart';
+import 'package:task/features/tasks/presentation/widgets/filter_tasks_dialog.dart';
 
 class TasksListPage extends StatefulWidget {
   const TasksListPage({super.key});
@@ -70,6 +71,25 @@ class _TasksListPageState extends State<TasksListPage> {
                             .labelStyle
                             ?.color ??
                         Colors.white70),
+                trailing: [
+                  IconButton(
+                    icon: Icon(Icons.filter_alt),
+                    onPressed: () async {
+                      final filterData = await showDialog<Map<String, dynamic>>(
+                        context: context,
+                        builder: (context) => FilterTasksDialog(),
+                      );
+                      if (filterData != null) {
+                        context.read<TasksBloc>().add(FilterTasksEvent(
+                              name: filterData["name"],
+                              date: filterData["date"],
+                              priority: filterData["priority"],
+                              tags: filterData["tags"],
+                            ));
+                      }
+                    },
+                  ),
+                ],
                 onChanged: (query) {
                   setState(() {
                     searchQuery = query;

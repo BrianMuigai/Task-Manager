@@ -54,5 +54,17 @@
     "dontHaveAcc": "¿No tienes una cuenta? Registrarse",
     "forgotPassword": "¿Olvidaste tu contraseña?",
     "or": "O",
-    "continueWithGoogle": "Continuar con Google"
+    "continueWithGoogle": "Continuar con Google",
+    "high": "Alta",
+    "medium": "Media",
+    "low": "Baja",
+    "filterTasks": "Filtrar tareas",
+    "selectDate": "Seleccionar fecha",
+    "date": "Fecha",
+    "nameContains": "El nombre contiene",
+    "priorityNumber": "Prioridad (número)",
+    "tagsCommaSeparated": "Etiquetas (separadas por comas)",
+    "cancel": "Cancelar",
+    "apply": "Aplicar"
+
 }
