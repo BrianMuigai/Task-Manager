@@ -80,6 +80,7 @@ class _TasksListPageState extends State<TasksListPage> {
                         builder: (context) => FilterTasksDialog(),
                       );
                       if (filterData != null) {
+                        // ignore: use_build_context_synchronously
                         context.read<TasksBloc>().add(FilterTasksEvent(
                               name: filterData["name"],
                               date: filterData["date"],

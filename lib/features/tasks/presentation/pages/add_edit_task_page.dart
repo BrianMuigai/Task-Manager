@@ -66,6 +66,7 @@ class _AddEditTaskPageState extends State<AddEditTaskPage> {
     );
     if (!mounted || pickedDate == null) return;
     final picked = await showTimePicker(
+      // ignore: use_build_context_synchronously
       context: context,
       initialTime: _startTime != null
           ? TimeOfDay.fromDateTime(_startTime!)
@@ -92,6 +93,7 @@ class _AddEditTaskPageState extends State<AddEditTaskPage> {
     );
     if (!mounted || pickedDate == null) return;
     final pickedTime = await showTimePicker(
+      // ignore: use_build_context_synchronously
       context: context,
       initialTime: _dueDateTime != null
           ? TimeOfDay.fromDateTime(_dueDateTime!)
