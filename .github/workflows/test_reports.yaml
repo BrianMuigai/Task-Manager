@@ -18,7 +18,7 @@ jobs:
       - run: flutter pub get
       - run: flutter test --coverage
       - run: genhtml coverage/lcov.info -o coverage/html
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-pages-artifact@v3
         with:
           name: coverage-report
           path: coverage/html
