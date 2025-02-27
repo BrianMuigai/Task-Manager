@@ -1,4 +1,5 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class PushNotificationService {
@@ -48,5 +49,5 @@ class PushNotificationService {
 // Must be a top-level function.
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // You can initialize Flutter bindings and log the background message.
-  print("Handling a background message: ${message.messageId}");
+  debugPrint("Handling a background message: ${message.messageId}");
 }
