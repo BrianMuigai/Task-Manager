@@ -30,7 +30,7 @@ import 'package:task/features/tasks/domain/repositories/task_repository.dart'
 
 class _FakeAppUser_0 extends _i1.SmartFake implements _i2.AppUser {
   _FakeAppUser_0(Object parent, Invocation parentInvocation)
-    : super(parent, parentInvocation);
+      : super(parent, parentInvocation);
 }
 
 /// A class which mocks [TaskRepository].
@@ -42,47 +42,37 @@ class MockTaskRepository extends _i1.Mock implements _i3.TaskRepository {
   }
 
   @override
-  _i4.Future<List<_i5.Task>> getTasks() =>
-      (super.noSuchMethod(
-            Invocation.method(#getTasks, []),
-            returnValue: _i4.Future<List<_i5.Task>>.value(<_i5.Task>[]),
-          )
-          as _i4.Future<List<_i5.Task>>);
+  _i4.Future<List<_i5.Task>> getTasks() => (super.noSuchMethod(
+        Invocation.method(#getTasks, []),
+        returnValue: _i4.Future<List<_i5.Task>>.value(<_i5.Task>[]),
+      ) as _i4.Future<List<_i5.Task>>);
 
   @override
-  _i4.Stream<List<_i5.Task>> getTasksStream() =>
-      (super.noSuchMethod(
-            Invocation.method(#getTasksStream, []),
-            returnValue: _i4.Stream<List<_i5.Task>>.empty(),
-          )
-          as _i4.Stream<List<_i5.Task>>);
+  _i4.Stream<List<_i5.Task>> getTasksStream() => (super.noSuchMethod(
+        Invocation.method(#getTasksStream, []),
+        returnValue: _i4.Stream<List<_i5.Task>>.empty(),
+      ) as _i4.Stream<List<_i5.Task>>);
 
   @override
-  _i4.Future<void> addTask(_i5.Task? task) =>
-      (super.noSuchMethod(
-            Invocation.method(#addTask, [task]),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+  _i4.Future<void> addTask(_i5.Task? task) => (super.noSuchMethod(
+        Invocation.method(#addTask, [task]),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i4.Future<void> updateTask(_i5.Task? task) =>
-      (super.noSuchMethod(
-            Invocation.method(#updateTask, [task]),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+  _i4.Future<void> updateTask(_i5.Task? task) => (super.noSuchMethod(
+        Invocation.method(#updateTask, [task]),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i4.Future<void> deleteTask(String? id) =>
-      (super.noSuchMethod(
-            Invocation.method(#deleteTask, [id]),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+  _i4.Future<void> deleteTask(String? id) => (super.noSuchMethod(
+        Invocation.method(#deleteTask, [id]),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 }
 
 /// A class which mocks [AuthRepository].
@@ -94,14 +84,12 @@ class MockAuthRepository extends _i1.Mock implements _i6.AuthRepository {
   }
 
   @override
-  _i4.Future<_i2.AppUser> signInWithGoogle() =>
-      (super.noSuchMethod(
-            Invocation.method(#signInWithGoogle, []),
-            returnValue: _i4.Future<_i2.AppUser>.value(
-              _FakeAppUser_0(this, Invocation.method(#signInWithGoogle, [])),
-            ),
-          )
-          as _i4.Future<_i2.AppUser>);
+  _i4.Future<_i2.AppUser> signInWithGoogle() => (super.noSuchMethod(
+        Invocation.method(#signInWithGoogle, []),
+        returnValue: _i4.Future<_i2.AppUser>.value(
+          _FakeAppUser_0(this, Invocation.method(#signInWithGoogle, [])),
+        ),
+      ) as _i4.Future<_i2.AppUser>);
 
   @override
   _i4.Future<_i2.AppUser> signInWithEmailPassword(
@@ -109,24 +97,21 @@ class MockAuthRepository extends _i1.Mock implements _i6.AuthRepository {
     String? password,
   ) =>
       (super.noSuchMethod(
+        Invocation.method(#signInWithEmailPassword, [email, password]),
+        returnValue: _i4.Future<_i2.AppUser>.value(
+          _FakeAppUser_0(
+            this,
             Invocation.method(#signInWithEmailPassword, [email, password]),
-            returnValue: _i4.Future<_i2.AppUser>.value(
-              _FakeAppUser_0(
-                this,
-                Invocation.method(#signInWithEmailPassword, [email, password]),
-              ),
-            ),
-          )
-          as _i4.Future<_i2.AppUser>);
+          ),
+        ),
+      ) as _i4.Future<_i2.AppUser>);
 
   @override
-  _i4.Future<void> signOut() =>
-      (super.noSuchMethod(
-            Invocation.method(#signOut, []),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+  _i4.Future<void> signOut() => (super.noSuchMethod(
+        Invocation.method(#signOut, []),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
   _i4.Future<_i2.AppUser> registerWithEmailPassword(
@@ -135,40 +120,36 @@ class MockAuthRepository extends _i1.Mock implements _i6.AuthRepository {
     String? displayName,
   ) =>
       (super.noSuchMethod(
+        Invocation.method(#registerWithEmailPassword, [
+          email,
+          password,
+          displayName,
+        ]),
+        returnValue: _i4.Future<_i2.AppUser>.value(
+          _FakeAppUser_0(
+            this,
             Invocation.method(#registerWithEmailPassword, [
               email,
               password,
               displayName,
             ]),
-            returnValue: _i4.Future<_i2.AppUser>.value(
-              _FakeAppUser_0(
-                this,
-                Invocation.method(#registerWithEmailPassword, [
-                  email,
-                  password,
-                  displayName,
-                ]),
-              ),
-            ),
-          )
-          as _i4.Future<_i2.AppUser>);
+          ),
+        ),
+      ) as _i4.Future<_i2.AppUser>);
 
   @override
-  _i4.Future<void> sendPasswordResetEmail(String? email) =>
-      (super.noSuchMethod(
-            Invocation.method(#sendPasswordResetEmail, [email]),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+  _i4.Future<void> sendPasswordResetEmail(String? email) => (super.noSuchMethod(
+        Invocation.method(#sendPasswordResetEmail, [email]),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
   _i4.Future<List<_i2.AppUser>> searchUsers(String? query) =>
       (super.noSuchMethod(
-            Invocation.method(#searchUsers, [query]),
-            returnValue: _i4.Future<List<_i2.AppUser>>.value(<_i2.AppUser>[]),
-          )
-          as _i4.Future<List<_i2.AppUser>>);
+        Invocation.method(#searchUsers, [query]),
+        returnValue: _i4.Future<List<_i2.AppUser>>.value(<_i2.AppUser>[]),
+      ) as _i4.Future<List<_i2.AppUser>>);
 }
 
 /// A class which mocks [CalendarService].
@@ -180,12 +161,10 @@ class MockCalendarService extends _i1.Mock implements _i7.CalendarService {
   }
 
   @override
-  _i4.Future<String?> getDefaultCalendarId() =>
-      (super.noSuchMethod(
-            Invocation.method(#getDefaultCalendarId, []),
-            returnValue: _i4.Future<String?>.value(),
-          )
-          as _i4.Future<String?>);
+  _i4.Future<String?> getDefaultCalendarId() => (super.noSuchMethod(
+        Invocation.method(#getDefaultCalendarId, []),
+        returnValue: _i4.Future<String?>.value(),
+      ) as _i4.Future<String?>);
 
   @override
   _i4.Future<String?> addOrUpdateEvent({
@@ -196,22 +175,19 @@ class MockCalendarService extends _i1.Mock implements _i7.CalendarService {
     String? existingEventId,
   }) =>
       (super.noSuchMethod(
-            Invocation.method(#addOrUpdateEvent, [], {
-              #title: title,
-              #start: start,
-              #end: end,
-              #description: description,
-              #existingEventId: existingEventId,
-            }),
-            returnValue: _i4.Future<String?>.value(),
-          )
-          as _i4.Future<String?>);
+        Invocation.method(#addOrUpdateEvent, [], {
+          #title: title,
+          #start: start,
+          #end: end,
+          #description: description,
+          #existingEventId: existingEventId,
+        }),
+        returnValue: _i4.Future<String?>.value(),
+      ) as _i4.Future<String?>);
 
   @override
-  _i4.Future<bool> deleteEvent(String? eventId) =>
-      (super.noSuchMethod(
-            Invocation.method(#deleteEvent, [eventId]),
-            returnValue: _i4.Future<bool>.value(false),
-          )
-          as _i4.Future<bool>);
+  _i4.Future<bool> deleteEvent(String? eventId) => (super.noSuchMethod(
+        Invocation.method(#deleteEvent, [eventId]),
+        returnValue: _i4.Future<bool>.value(false),
+      ) as _i4.Future<bool>);
 }
