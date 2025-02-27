@@ -2,6 +2,8 @@
 
 Task Manager is a Flutter application built using Clean Architecture and flutter_bloc, designed to mimic Todoist features. It supports task management with calendar synchronization, collaborator sharing, live user presence, task filtering, and more.
 
+![Project Screenshot](image.png)
+
 **Documentation:** [https://brianmuigai.github.io/Task-Manager/](https://brianmuigai.github.io/Task-Manager/)
 
 ## Features

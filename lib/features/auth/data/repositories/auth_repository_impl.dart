@@ -16,6 +16,36 @@ class AuthRepositoryImpl implements AuthRepository {
       @Named('googleSignIn') this.googleSignIn,
       @Named('firebaseFirestore') this.firestore);
 
+  Future<void> saveUserToFirestore(
+      User updatedUser, String displayName, String email) async {
+    // Save user profile to Firestore.
+    await firestore.collection('users').doc(updatedUser.uid).set({
+      'displayName': updatedUser.displayName ?? displayName,
+      'email': updatedUser.email ?? email,
+      'photoUrl': updatedUser.photoURL ?? '',
+      'createdAt': FieldValue.serverTimestamp(),
+      'keywords': generateKeywords(
+          updatedUser.displayName ?? '', updatedUser.email ?? ''),
+    });
+  }
+
+  List<String> generateKeywords(String displayName, String email) {
+    final keywords = <String>{};
+
+    // Split displayName and email into words.
+    final words = displayName.split(' ') + email.split(RegExp(r'[@.]'));
+
+    for (var word in words) {
+      word = word.trim().toLowerCase();
+      if (word.isEmpty) continue;
+      // Generate all prefixes of the word.
+      for (int i = 1; i <= word.length; i++) {
+        keywords.add(word.substring(0, i));
+      }
+    }
+    return keywords.toList();
+  }
+
   @override
   Future<AppUser> signInWithGoogle() async {
     final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
@@ -34,6 +64,7 @@ class AuthRepositoryImpl implements AuthRepository {
     if (user == null) {
       throw Exception("User is null");
     }
+    await saveUserToFirestore(user, user.displayName ?? '', user.email ?? '');
     return AppUser(
       uid: user.uid,
       displayName: user.displayName ?? '',
@@ -78,6 +109,7 @@ class AuthRepositoryImpl implements AuthRepository {
     // Optionally, reload the user to get the updated info.
     await user.reload();
     final updatedUser = firebaseAuth.currentUser;
+    await saveUserToFirestore(updatedUser!, displayName, email);
     return AppUser(
       uid: updatedUser!.uid,
       displayName: updatedUser.displayName ?? displayName,
@@ -101,7 +133,7 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<List<AppUser>> searchUsers(String query) async {
     final snapshot = await firestore
         .collection('users')
-        .where('keywords', arrayContains: query.toLowerCase())
+        .where('keywords', arrayContainsAny: query.toLowerCase().split(' '))
         .get();
     return snapshot.docs.map((doc) {
       final data = doc.data();

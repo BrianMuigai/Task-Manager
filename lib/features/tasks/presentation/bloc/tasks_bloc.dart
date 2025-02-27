@@ -64,11 +64,11 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
 
     on<AddTaskEvent>((event, emit) async {
       try {
-        await addTaskUseCase(event.task);
+        final createdTask = await addTaskUseCase(event.task);
         final tasks = await getTasksUseCase();
         emit(TasksLoaded(tasks));
 
-        final eventId = await addTaskToCalendarUseCase(event.task);
+        final eventId = await addTaskToCalendarUseCase(createdTask);
         if (eventId != null) {
           // Update the task with the new calendar event id.
           final updatedTask = event.task.copyWith(calendarEventId: eventId);

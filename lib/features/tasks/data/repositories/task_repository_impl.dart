@@ -23,7 +23,7 @@ class TaskRepositoryImpl implements TaskRepository {
   }
 
   @override
-  Future<void> addTask(Task task) async {
+  Future<Task> addTask(Task task) async {
     final taskModel = TaskModel(
         id: task.id,
         title: task.title,
@@ -34,7 +34,31 @@ class TaskRepositoryImpl implements TaskRepository {
         collaboratorIds: task.collaboratorIds,
         updatedAt: task.updatedAt,
         description: task.description);
-    await dataSource.addTask(taskModel);
+    final newDocSnapshot = await dataSource.addTask(taskModel);
+    // Convert Firestore snapshot -> TaskModel -> domain Task
+    final newData = newDocSnapshot.data() as Map<String, dynamic>?;
+    if (newData == null) {
+      throw Exception("Failed to retrieve newly created task data.");
+    }
+
+    final createdTaskModel = TaskModel(
+      id: newDocSnapshot.id,
+      title: newData['title'] ?? '',
+      description: newData['description'] ?? '',
+      startTime: newData['startTime']?.toDate(),
+      dueDateTime: newData['dueDateTime']?.toDate(),
+      completed: newData['completed'] ?? false,
+      ownerId: newData['ownerId'] ?? '',
+      collaboratorIds: newData['collaboratorIds'] != null
+          ? List<String>.from(newData['collaboratorIds'])
+          : [],
+      updatedAt: newData['updatedAt']?.toDate(),
+      calendarEventId: newData['calendarEventId'],
+      priority: newData['priority'],
+      tags: newData['tags'] != null ? List<String>.from(newData['tags']) : [],
+    );
+
+    return createdTaskModel;
   }
 
   @override

@@ -24,8 +24,10 @@ class FirebaseTaskDataSource {
         );
   }
 
-  Future<void> addTask(TaskModel task) async {
-    await tasksCollection.add(task.toMap());
+  Future<DocumentSnapshot> addTask(TaskModel task) async {
+    final docRef = await tasksCollection.add(task.toMap());
+    final newSnapshot = await docRef.get();
+    return newSnapshot;
   }
 
   Future<void> updateTask(TaskModel task) async {

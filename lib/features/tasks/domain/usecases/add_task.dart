@@ -9,7 +9,7 @@ class AddTask {
 
   AddTask(this.repository);
 
-  Future<void> call(Task task) async {
-    await repository.addTask(task);
+  Future<Task> call(Task task) async {
+    return await repository.addTask(task);
   }
 }

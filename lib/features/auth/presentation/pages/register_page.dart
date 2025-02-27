@@ -54,6 +54,8 @@ class _RegisterPageState extends State<RegisterPage> {
             setState(() {
               _errorMessage = state.error;
             });
+          } else if (state is Authenticated) {
+            Navigator.pop(context);
           }
         },
         child: BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {

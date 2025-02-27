@@ -10,8 +10,15 @@
 const {onRequest} = require("firebase-functions/v2/https");
 const logger = require("firebase-functions/logger");
 
-// Import our helper functions from notifications_helper.js
-const notificationsHelper = require("./notifications_helper");
 
-// Export the Cloud Function defined in notifications_helper.js
+const notificationsHelper = require("./notifications_helper");
+const users = require("./users");
+
 exports.sendDueDateReminder = notificationsHelper.sendDueDateReminder;
+exports.listUsers = users.listUsers;
+
+// Example HTTPS function (optional)
+exports.helloWorld = onRequest((request, response) => {
+  logger.info("Hello logs!", {structuredData: true});
+  response.send("Hello from Firebase!");
+});
