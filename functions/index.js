@@ -10,10 +10,8 @@
 const {onRequest} = require("firebase-functions/v2/https");
 const logger = require("firebase-functions/logger");
 
-// Create and deploy your first functions
-// https://firebase.google.com/docs/functions/get-started
+// Import our helper functions from notifications_helper.js
+const notificationsHelper = require("./notifications_helper");
 
-// exports.helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+// Export the Cloud Function defined in notifications_helper.js
+exports.sendDueDateReminder = notificationsHelper.sendDueDateReminder;
